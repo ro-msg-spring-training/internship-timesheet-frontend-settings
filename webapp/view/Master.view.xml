@@ -1,0 +1,64 @@
+<mvc:View
+	controllerName="sap.ui.demo.fiori2.controller.Master"
+	xmlns="sap.m"
+	xmlns:f="sap.f"
+	xmlns:mvc="sap.ui.core.mvc"  >
+	<f:DynamicPage id="dynamicPageId" toggleHeaderOnTitleClick="false">
+		
+		<!-- DynamicPage Title -->
+		<f:title>
+			<f:DynamicPageTitle>
+				<f:heading>
+					<Title text="{i18n>masterPageTitle}"/>
+				</f:heading>
+			</f:DynamicPageTitle>
+		</f:title>
+		
+		<f:content>
+			<VBox fitContainer="true">
+				<OverflowToolbar class="sapFDynamicPageAlignContent">
+					<ToolbarSpacer/>
+					<OverflowToolbarButton icon="sap-icon://synchronize" text="Synchronize" type="Transparent" press=".onSynchronize"/>
+					<OverflowToolbarButton icon="sap-icon://sort" text="Sort" type="Transparent" press=".onSort"/>
+				</OverflowToolbar>
+				<Table
+					id="usersTable"
+					inset="false"
+					items="{
+						path: 'model>/programs',
+						sorter: {
+							path: 'programName'
+						}
+					}"
+					class="sapFDynamicPageAlignContent"
+					width="auto">
+					<columns>
+						<Column width="15em">
+							<Text text="{i18n>titleColumn}"/>
+						</Column>
+						<Column width="15em">
+							<Text text="{i18n>startDateColumn}"/>
+						</Column>
+						<Column width="15em">
+							<Text text="{i18n>endDateColumn}"/>
+						</Column>
+						<Column width="15em">
+							<Text text="{i18n>workingHoursColumn}"/>
+						</Column>
+					</columns>
+					<items>
+						<ColumnListItem type="Navigation" press=".onPressed">
+							<cells>
+								<ObjectIdentifier id="user" title="{model>name}"/>
+								<ObjectIdentifier id="startDate" title="{model>startDate}"/>
+								<ObjectIdentifier id="endDate" title="{model>endDate}"/>
+								<ObjectIdentifier id="workingHours" title="{model>workingHours}"/>
+							</cells>
+						</ColumnListItem>
+					</items>
+				</Table>
+			</VBox>
+		</f:content>
+		
+	</f:DynamicPage>
+</mvc:View>
