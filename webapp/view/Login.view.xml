@@ -1,13 +1,12 @@
 <mvc:View
    controllerName="sap.ui.demo.fiori2.controller.Login"
    xmlns="sap.m"
-   xmlns:layout="sap.ui.layout"
    xmlns:semantic="sap.f.semantic"
    xmlns:mvc="sap.ui.core.mvc">
 	<semantic:SemanticPage id="loginPage">
 		<semantic:titleHeading>
 			<Title
-				text="Login"
+				text="{i18n>loginPageTitle}"
 				level="H2"/>
 		</semantic:titleHeading>
 		<semantic:content>
@@ -40,7 +39,7 @@
 			    			width="80%"/>
 		    		</HBox>
 		    		<Button
-		    			text="Log In"
+		    			text="{i18n>loginButton}"
 		    			press=".onLogin"/>
 	    		</VBox>
     		</Panel>
