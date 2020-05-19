@@ -1,0 +1,49 @@
+<mvc:View
+   controllerName="sap.ui.demo.fiori2.controller.Login"
+   xmlns="sap.m"
+   xmlns:layout="sap.ui.layout"
+   xmlns:semantic="sap.f.semantic"
+   xmlns:mvc="sap.ui.core.mvc">
+	<semantic:SemanticPage id="loginPage">
+		<semantic:titleHeading>
+			<Title
+				text="Login"
+				level="H2"/>
+		</semantic:titleHeading>
+		<semantic:content>
+			<Panel class="sapFSemanticPageAlignContent">
+				<VBox alignItems="Center">
+					<HBox 
+						alignItems="Center">
+						<Label
+							class="sapUiSmallMarginEnd"
+							text="{i18n>username}">
+						</Label>
+						<Input
+							id="username"
+			    			value="{/username}"
+			    			placeholder="{i18n>username}"
+			    			valueLiveUpdate="true"
+			    			width="80%"/>
+		    		</HBox>
+		    		<HBox alignItems="Center">
+						<Label
+							class="sapUiSmallMarginEnd"
+							text="{i18n>password}">
+						</Label>
+						<Input
+							id="password"
+			    			value="{/password}"
+			    			placeholder="{i18n>password}"
+			    			valueLiveUpdate="true"
+		    				type="Password"
+			    			width="80%"/>
+		    		</HBox>
+		    		<Button
+		    			text="Log In"
+		    			press=".onLogin"/>
+	    		</VBox>
+    		</Panel>
+		</semantic:content>
+	</semantic:SemanticPage>
+</mvc:View>

@@ -2,16 +2,116 @@
 	"_version": "1.12.0",
 	"sap.app": {
 		"id": "sap.ui.demo.fiori2",
+		"i18n": "i18n/i18n.properties",
+		"title": "{{appTitle}}",
+		"description": "{{appDescription}}",
 		"type": "application",
 		"applicationVersion": {
 			"version": "1.0.0"
 		}
 	},
+	"sap.ui": {
+		"technology": "UI5",
+		"deviceTypes": {
+			"desktop": true,
+			"tablet": true,
+			"phone": true
+		}
+	},
 	"sap.ui5": {
+		"rootView": {
+			"viewName": "sap.ui.demo.fiori2.view.App",
+			"type": "XML",
+			"async": true,
+			"id": "app"
+		},
 		"dependencies": {
 			"minUI5Version": "1.60.0",
 			"libs": {
-				"sap.ui.core": {}
+				"sap.ui.core": {},
+				"sap.m": {},
+				"sap.f": {}
+			}
+		},
+		"models": {
+			"i18n": {
+				"type": "sap.ui.model.resource.ResourceModel",
+				"settings": {
+					"bundleName": "sap.ui.demo.fiori2.i18n.i18n"
+				}
+			}
+		},
+		"routing": {
+			"config": {
+				"routerClass": "sap.f.routing.Router",
+				"viewType": "XML",
+				"viewPath": "sap.ui.demo.fiori2.view",
+				"controlId": "layout",
+				"controlAggregation": "beginColumnPages",
+				"transition": "slide",
+				"async": true
+			},
+			"routes": [
+				{
+					"pattern": "",
+					"name": "login",
+					"target": "login"
+				},
+				{
+					"pattern": "master",
+					"name": "master",
+					"target": [
+						"master"
+					]
+				},
+				{
+					"pattern": "master/detail/{user}/{layout}/{programName}",
+					"name": "detail",
+					"target": [
+						"master",
+						"detail"
+					]
+				},
+				{
+					"pattern": "masterDetail",
+					"name": "masterDetail",
+					"target": [
+						"master",
+						"detail"
+					]
+				},
+				{ 
+					"pattern": "createBookingDetail/{user}/{layout}/{programName}/{bookingDay}",
+					"name": "createBookingDetail",
+					"target": [
+						"master",
+						"createBookingDetail"
+					]}
+			],
+			"targets": {
+				"login": {
+					"viewName": "Login",
+					"viewLevel": 1,
+					"viewId": "login"
+				},
+				"master": {
+					"viewName": "Master",
+					"viewLevel": 1,
+					"controlAggregation": "beginColumnPages"
+				},
+				"detail": {
+					"viewName": "Detail",
+					"viewLevel": 1,
+					"controlAggregation": "midColumnPages"
+				},
+				"masterDetail": {
+					"viewName": "MasterDetail",
+					"viewLevel" : 2
+				},
+				"createBookingDetail": {
+					"viewName": "CreateBookingDetail",
+					"controlAggregation": "midColumnPages"
+				}
 			}
 		},
 		"config": {

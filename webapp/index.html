@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>SAP Fiori 2.0 App Tutorial</title>
+	<title>Timesheet Settings</title>
 
 	<script id="sap-ui-bootstrap"
 		src="https://sapui5.hana.ondemand.com/resources/sap-ui-core.js"
@@ -16,15 +16,24 @@
 		data-sap-ui-async="true"
 		data-sap-ui-frameOptions="trusted">
 	</script>
+	
+	<script>
+			sap.ui.getCore().attachInit(function () {
+				sap.ui.require([
+					"sap/m/Shell",
+					"sap/ui/core/ComponentContainer"
+				], function (Shell, ComponentContainer) {
+					new Shell({
+						app: new ComponentContainer({
+							name: "sap.ui.demo.fiori2",
+							height: "100%"
+						})
+					}).placeAt("content");
+				});
+			});
+	</script>
 </head>
 
-<body class="sapUiBody sapUiSizeCompact">
-	<div data-sap-ui-component
-		data-name="sap.ui.demo.fiori2"
-		data-height="100%"
-		data-id="container"
-		data-settings='{"id" : "fiori2"}'
-		style="height: 100%">
-	</div>
-</body>
+<body class="sapUiBody" id="content">
+</body
 </html>
