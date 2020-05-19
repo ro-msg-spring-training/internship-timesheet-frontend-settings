@@ -63,6 +63,11 @@
 					"target": [
 						"master"
 					]
+				},
+				{
+					"pattern": "wizard",
+					"name": "wizard",
+					"target": "wizard"
 				}
 			],
 			"targets": {
@@ -73,6 +78,10 @@
 				},
 				"master": {
 					"viewName": "Master",
+					"viewLevel": 1
+				},
+				"wizard": {
+					"viewName": "Wizard",
 					"viewLevel": 1
 				}
 			}

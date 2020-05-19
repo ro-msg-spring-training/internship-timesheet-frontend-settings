@@ -1,0 +1,46 @@
+<mvc:View
+		height="100%"
+		controllerName="sap.ui.demo.fiori2.controller.Wizard"
+		xmlns:form="sap.ui.layout.form"
+		xmlns:core="sap.ui.core"
+		xmlns:u="sap.ui.unified"
+		xmlns:mvc="sap.ui.core.mvc"
+		xmlns="sap.m">
+		<NavContainer id="wizardNavContainer">
+			<pages>
+				<Page
+				id="wizardContentPage"
+				showHeader="false">
+					<content>
+						<Wizard id="CreateProgramWizard" class="sapUiResponsivePadding--header sapUiResponsivePadding--content"
+								complete="wizardCompletedHandler">
+							<WizardStep id="CreateProgramStep"
+										title="Create Program"
+										validated="true">
+								
+							</WizardStep>
+							
+							<WizardStep id="CreateUsersStep"
+										title="Create Users"
+										validated="true">
+								
+							
+							</WizardStep>
+							<WizardStep id="CreatePSPStep"
+										title="Create PSP"
+										validated="true">
+									
+							</WizardStep>
+							
+						</Wizard>
+					</content>
+					<footer>
+						<OverflowToolbar>
+							<ToolbarSpacer/>
+							<Button text="Cancel" press="handleWizardCancel"/>
+						</OverflowToolbar>
+					</footer>
+				</Page>
+			</pages>
+		</NavContainer>
+</mvc:View>
