@@ -1,10 +1,5 @@
-<mvc:View
-	controllerName="sap.ui.demo.fiori2.controller.Master"
-	xmlns="sap.m"
-	xmlns:f="sap.f"
-	xmlns:mvc="sap.ui.core.mvc"  >
+<mvc:View controllerName="sap.ui.demo.fiori2.controller.Master" xmlns="sap.m" xmlns:f="sap.f" xmlns:mvc="sap.ui.core.mvc">
 	<f:DynamicPage id="dynamicPageId" toggleHeaderOnTitleClick="false">
-		
 		<!-- DynamicPage Title -->
 		<f:title>
 			<f:DynamicPageTitle>
@@ -13,25 +8,15 @@
 				</f:heading>
 			</f:DynamicPageTitle>
 		</f:title>
-		
 		<f:content>
 			<VBox fitContainer="true">
 				<OverflowToolbar class="sapFDynamicPageAlignContent">
 					<ToolbarSpacer/>
-					<OverflowToolbarButton icon="sap-icon://synchronize" text="Synchronize" type="Transparent" press=".onSynchronize"/>
-					<OverflowToolbarButton icon="sap-icon://sort" text="Sort" type="Transparent" press=".onSort"/>
+					<OverflowToolbarButton icon="sap-icon://filter" tooltip="{i18n>filterMessage}" id = "filterButton" type="Transparent" press=".onFilter"/>
+					<OverflowToolbarButton icon="sap-icon://sort"  type="Transparent" press=".onSort"/>
 				</OverflowToolbar>
-				<Table
-					id="usersTable"
-					inset="false"
-					items="{
-						path: 'model>/programs',
-						sorter: {
-							path: 'programName'
-						}
-					}"
-					class="sapFDynamicPageAlignContent"
-					width="auto">
+				<Table id="usersTable" inset="false" items="{ path: 'model>/programs', sorter: { path: 'programName' }}"
+					class="sapFDynamicPageAlignContent" width="auto">
 					<columns>
 						<Column width="15em">
 							<Text text="{i18n>titleColumn}"/>
@@ -59,6 +44,5 @@
 				</Table>
 			</VBox>
 		</f:content>
-		
 	</f:DynamicPage>
 </mvc:View>
