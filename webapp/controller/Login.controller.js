@@ -38,7 +38,7 @@ sap.ui.define([
 					oRouter.navTo("master", true);
     			},
     			error: function (e,xhr,textStatus,err,data) {
-    				MessageToast.show("{i18n>loginWrongData}");
+    				MessageToast.show("Invalid username or password or you are not an admin");
 				}
 			});
 		},
