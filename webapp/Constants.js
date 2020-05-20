@@ -6,7 +6,8 @@ function() {
         BASE_URL: "http://localhost:8083",
         LOGIN_PATH: "/adminLogin",
         USERS_PATH: "/users",
-        PROGRAMS_PATH: "/programs"
+        PROGRAMS_PATH: "/programs",
+        PSPS_PATH:"/psps"
     };
 
     return constants;

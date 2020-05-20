@@ -15,7 +15,7 @@
 					<OverflowToolbarButton icon="sap-icon://filter" tooltip="{i18n>filterMessage}" id = "filterButton" type="Transparent" press=".onFilter"/>
 					<OverflowToolbarButton icon="sap-icon://sort"  type="Transparent" press=".onSort"/>
 				</OverflowToolbar>
-				<Table id="usersTable" inset="false" items="{ path: 'model>/programs', sorter: { path: 'programName' }}"
+				<Table id="programsTable" inset="false" items="{ path: 'model>/programs', sorter: { path: 'programName' }}"
 					class="sapFDynamicPageAlignContent" width="auto">
 					<columns>
 						<Column width="15em">

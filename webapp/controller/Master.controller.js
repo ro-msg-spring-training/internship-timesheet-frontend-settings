@@ -32,23 +32,22 @@ sap.ui.define([
 			});
 
 			this.oView.setModel(oModel, "model");
-
 			this._bDescendingSort = false;
-			this.oProductsTable = this.oView.byId("usersTable");
+			this.oProgramsTable = this.oView.byId("programsTable");
 
 			this.oRouter = this.getOwnerComponent().getRouter();
 		},
 
 		onSort: function () {
 			this._bDescendingSort = !this._bDescendingSort;
-			var oBinding = this.oProductsTable.getBinding("items"),
-				oSorter = new Sorter("programName", this._bDescendingSort);
+			var oBinding = this.oProgramsTable.getBinding("items"),
+				oSorter = new Sorter("name", this._bDescendingSort);
 
 			oBinding.sort(oSorter);
 		},
 		onFilter: function (oEvent) {
 			var iCount = this.oView.getModel("model").getProperty("/count");
-			var oTable = this.oView.byId("usersTable");
+			var oTable = this.oView.byId("programsTable");
 			var oBinding = oTable.getBinding("items");
 			if (iCount % 2 == 0) {
 				var aFilter = [];
@@ -75,21 +74,13 @@ sap.ui.define([
 		},
 
 		onPressed: function (oEvent) {
-			var userPath = oEvent.getSource().getBindingContext("users").getPath(),
-				user = userPath.split("/").slice(-1).pop();
-			var programName;
-			var users = this.oView.getModel("users").getData().modelData;
-			for (var i = 0; i < users.length; i++) {
-				if (users[i].id == user) {
-					programName = users[i].programName;
-				}
-			}
-			var oFCL = this.oView.getParent().getParent();
-			oFCL.setLayout(fioriLibrary.LayoutType.TwoColumnsMidExpanded);
+			var programPath = oEvent.getSource().getBindingContext("model").getPath(),
+				programIndex = programPath.split("/").slice(-1).pop();
+			
+			var programId = this.oProgramsTable.getBinding("items").oList[programIndex].programId;
+			
 			this.oRouter.navTo("detail", {
-				layout: oFCL.getLayout(),
-				user: user,
-				programName: programName
+				programId: programId
 			});
 		}
 	});

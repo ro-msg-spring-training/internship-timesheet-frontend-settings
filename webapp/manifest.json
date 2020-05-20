@@ -51,25 +51,23 @@
 				"transition": "slide",
 				"async": true
 			},
-			"routes": [
-				{
-					"pattern": "",
-					"name": "login",
-					"target": "login"
-				},
-				{
-					"pattern": "master",
-					"name": "master",
-					"target": [
-						"master"
-					]
-				},
-				{
-					"pattern": "wizard",
-					"name": "wizard",
-					"target": "wizard"
-				}
-			],
+			"routes": [{
+				"pattern": "",
+				"name": "login",
+				"target": "login"
+			}, {
+				"pattern": "master",
+				"name": "master",
+				"target": ["master"]
+			}, {
+				"pattern": "master/detail/{programId}",
+				"name": "detail",
+				"target": "detail"
+			}, {
+				"pattern": "wizard",
+				"name": "wizard",
+				"target": "wizard"
+			}],
 			"targets": {
 				"login": {
 					"viewName": "Login",
@@ -80,6 +78,10 @@
 					"viewName": "Master",
 					"viewLevel": 1
 				},
+				"detail": {
+					"viewName": "Detail",
+					"viewLevel": 1
+				},
 				"wizard": {
 					"viewName": "Wizard",
 					"viewLevel": 1
@@ -88,6 +90,11 @@
 		},
 		"config": {
 			"fullWidth": true
-		}
+		},
+		"contentDensities": {
+			"compact": false,
+			"cozy": false
+		},
+		"flexEnabled": true
 	}
 }
