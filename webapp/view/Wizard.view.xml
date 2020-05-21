@@ -1,60 +1,50 @@
-<mvc:View
-		height="100%"
-		controllerName="sap.ui.demo.fiori2.controller.Wizard"
-		xmlns:form="sap.ui.layout.form"
-		xmlns:core="sap.ui.core"
-		xmlns:u="sap.ui.unified"
-		xmlns:mvc="sap.ui.core.mvc"
-		xmlns="sap.m">
-		<NavContainer id="wizardNavContainer">
-			<pages>
-				<Page
-				id="wizardContentPage"
-				showHeader="false">
-					<content>
-						<Wizard id="CreateProgramWizard" class="sapUiResponsivePadding--header sapUiResponsivePadding--content"
-								complete="wizardCompletedHandler">
-							<WizardStep id="CreateProgramStep"
-										title="{i18n>createProgramStep}"
-										validated="true">
-								
-							</WizardStep>
-							
-							<WizardStep id="CreateUsersStep"
-										title="{i18n>createUsersStep}"
-										validated="false"
-										activate="createUsersStepValidation">
-								
-								<form:SimpleForm editable="true">
-									<Label text="{i18n>firstName}"/>
-									<Input id="firstName" placeholder="{i18n>enterFirstName}" value="" liveChange="firstNameValidation" valueState="{/firstNameState}"/>
-									
-									<Label text="{i18n>lastName}"/>
-									<Input id="lastName" placeholder="{i18n>enterLastName}" value="" liveChange="lastNameValidation" valueState="{/lastNameState}"/>
-									
-									<Label text="{i18n>username}"/>
-									<Input id="username" placeholder="{i18n>enterUsername}" value="" liveChange="usernameValidation" valueState="{/usernameState}"/>
-									
-									<Label text="{i18n>password}"/>
-									<Input id="password" placeholder="{i18n>enterPassword}" value="" liveChange="passwordValidation" valueState="{/passwordState}"/>
-								</form:SimpleForm>
-							
-							</WizardStep>
-							<WizardStep id="CreatePSPStep"
-										title="{i18n>createPSPStep}"
-										validated="true">
-									
-							</WizardStep>
-							
-						</Wizard>
-					</content>
-					<footer>
-						<OverflowToolbar>
-							<ToolbarSpacer/>
-							<Button text="{i18n>cancel}" press="handleWizardCancel"/>
-						</OverflowToolbar>
-					</footer>
-				</Page>
-			</pages>
-		</NavContainer>
+<mvc:View height="100%" controllerName="sap.ui.demo.fiori2.controller.Wizard" xmlns:form="sap.ui.layout.form" xmlns:core="sap.ui.core"
+	xmlns:u="sap.ui.unified" xmlns:mvc="sap.ui.core.mvc" xmlns="sap.m">
+	<NavContainer id="wizardNavContainer">
+		<pages>
+			<Page id="wizardContentPage" showHeader="false">
+				<content>
+					<Wizard id="CreateProgramWizard" class="sapUiResponsivePadding--header sapUiResponsivePadding--content" complete="wizardCompletedHandler">
+						<WizardStep id="CreateProgramStep" title="{i18n>createProgramStep}" validated="true">
+							<form:SimpleForm editable="true">
+								<Label text="{i18n>programName}"/>
+								<Input id="programName" placeholder="{i18n>programNamePlaceholder}" value="" liveChange="firstNameValidation" valueState="{/firstNameState}"/>
+								<Label text="{i18n>programStartDate}"/>
+								<DatePicker id="startDate" value="" valueFormat="YYYY-MM-dd" displayFormat="YYYY-MM-dd" placeholder="{i18n>dateFormat}"/>
+								<Label text="{i18n>programEndDate}"/>
+								<DatePicker id="endDate" value="" valueFormat="YYYY-MM-dd" displayFormat="YYYY-MM-dd" placeholder="{i18n>dateFormat}"/>
+								<Label text="{i18n>programWorkingHours}"/>
+								<ComboBox id="workingHoursSelect" placeholder="{i18n>programWorkingHoursPlaceholder}">
+									<core:Item key="4" text="4" enabled="true"/>
+									<core:Item key="5" text="5" enabled="true"/>
+									<core:Item key="6" text="6" enabled="true"/>
+									<core:Item key="7" text="7" enabled="true"/>
+									<core:Item key="8" text="8" enabled="true"/>
+								</ComboBox>
+							</form:SimpleForm>
+						</WizardStep>
+						<WizardStep id="CreateUsersStep" title="{i18n>createUsersStep}" validated="false" activate="createUsersStepValidation">
+							<form:SimpleForm editable="true">
+								<Label text="{i18n>firstName}"/>
+								<Input id="firstName" placeholder="{i18n>enterFirstName}" value="" liveChange="firstNameValidation" valueState="{/firstNameState}"/>
+								<Label text="{i18n>lastName}"/>
+								<Input id="lastName" placeholder="{i18n>enterLastName}" value="" liveChange="lastNameValidation" valueState="{/lastNameState}"/>
+								<Label text="{i18n>username}"/>
+								<Input id="username" placeholder="{i18n>enterUsername}" value="" liveChange="usernameValidation" valueState="{/usernameState}"/>
+								<Label text="{i18n>password}"/>
+								<Input id="password" placeholder="{i18n>enterPassword}" value="" liveChange="passwordValidation" valueState="{/passwordState}"/>
+							</form:SimpleForm>
+						</WizardStep>
+						<WizardStep id="CreatePSPStep" title="{i18n>createPSPStep}" validated="true"></WizardStep>
+					</Wizard>
+				</content>
+				<footer>
+					<OverflowToolbar>
+						<ToolbarSpacer/>
+						<Button text="{i18n>cancel}" press="handleWizardCancel"/>
+					</OverflowToolbar>
+				</footer>
+			</Page>
+		</pages>
+	</NavContainer>
 </mvc:View>

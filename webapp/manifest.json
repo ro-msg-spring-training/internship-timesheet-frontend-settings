@@ -58,7 +58,7 @@
 			}, {
 				"pattern": "master",
 				"name": "master",
-				"target": ["master"]
+				"target": ["wizard"]
 			}, {
 				"pattern": "master/detail/{programId}",
 				"name": "detail",
