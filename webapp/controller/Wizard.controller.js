@@ -3,8 +3,9 @@ sap.ui.define([
 	"sap/ui/core/mvc/Controller",
 	"sap/ui/model/json/JSONModel",
 	"sap/m/MessageBox",
+	"sap/ui/core/Fragment",
 	"sap/m/MessageToast"
-], function (Constants, Controller, JSONModel, MessageBox, MessageToast) {
+], function (Controller, JSONModel, MessageBox, Fragment, MessageToast) {
 	"use strict";
 
 	return Controller.extend("sap.ui.demo.fiori2.controller.Wizard", {
@@ -20,6 +21,9 @@ sap.ui.define([
 			var oModel = new sap.ui.model.json.JSONModel(oJSONData);
 
 			this._programDetails = undefined;
+			this.oModelUsers = {
+				users:[]
+			};
 			this._users = [];
 			this._psps = [];
 
@@ -68,6 +72,50 @@ sap.ui.define([
 				this._wizard.validateStep(this.byId("CreateUsersStep"));
 			}
 
+		},
+		
+		onAddUser: function () {
+			this.getView().byId("firstName").setValue("");
+			this.getView().byId("lastName").setValue("");
+			this.getView().byId("username").setValue("");
+			this.getView().byId("password").setValue("");
+			
+			var firstName = this.byId("firstName").getValue();
+			var lastName = this.byId("lastName").getValue();
+			var username = this.byId("username").getValue();
+			var password = this.byId("password").getValue();
+			
+			var userData = {
+				firstName: firstName,
+				lastName: lastName,
+				username: username,
+				password: password
+			};
+			
+			//var oViewUsers = this.getView                                                 
+			//this._users.push(oModel.setData(userData));
+			
+			this._users.push(userData);
+		
+			console.log(this._users);
+			
+		},
+
+		handleDisplayUsers: function (oEvent) {
+			var oButton = oEvent.getSource();
+			if (!this._oDialog) {
+				Fragment.load({
+					name: "sap.ui.demo.fiori2.view.Users",
+					controller: this
+				}).then(function (oDialog) {
+					this._oDialog = oDialog;
+					this._configDialog(oButton);
+					this._oDialog.open();
+				}.bind(this));
+			} else {
+				this._configDialog(oButton);
+				this._oDialog.open();
+			}
 		},
 
 		backToWizardContent: function () {

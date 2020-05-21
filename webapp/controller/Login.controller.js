@@ -25,6 +25,7 @@ sap.ui.define([
 			var myformData = new FormData();      
 			myformData.append("username", username);
 			myformData.append("password", password);
+			myformData.append("appType", 1);
     		
     		var oRouter = sap.ui.core.UIComponent.getRouterFor(this);
 
