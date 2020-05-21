@@ -15,19 +15,33 @@
 						<Wizard id="CreateProgramWizard" class="sapUiResponsivePadding--header sapUiResponsivePadding--content"
 								complete="wizardCompletedHandler">
 							<WizardStep id="CreateProgramStep"
-										title="Create Program"
+										title="{i18n>createProgramStep}"
 										validated="true">
 								
 							</WizardStep>
 							
 							<WizardStep id="CreateUsersStep"
-										title="Create Users"
-										validated="true">
+										title="{i18n>createUsersStep}"
+										validated="false"
+										activate="createUsersStepValidation">
 								
+								<form:SimpleForm editable="true">
+									<Label text="{i18n>firstName}"/>
+									<Input id="firstName" placeholder="{i18n>enterFirstName}" value="" liveChange="firstNameValidation" valueState="{/firstNameState}"/>
+									
+									<Label text="{i18n>lastName}"/>
+									<Input id="lastName" placeholder="{i18n>enterLastName}" value="" liveChange="lastNameValidation" valueState="{/lastNameState}"/>
+									
+									<Label text="{i18n>username}"/>
+									<Input id="username" placeholder="{i18n>enterUsername}" value="" liveChange="usernameValidation" valueState="{/usernameState}"/>
+									
+									<Label text="{i18n>password}"/>
+									<Input id="password" placeholder="{i18n>enterPassword}" value="" liveChange="passwordValidation" valueState="{/passwordState}"/>
+								</form:SimpleForm>
 							
 							</WizardStep>
 							<WizardStep id="CreatePSPStep"
-										title="Create PSP"
+										title="{i18n>createPSPStep}"
 										validated="true">
 									
 							</WizardStep>
@@ -37,7 +51,7 @@
 					<footer>
 						<OverflowToolbar>
 							<ToolbarSpacer/>
-							<Button text="Cancel" press="handleWizardCancel"/>
+							<Button text="{i18n>cancel}" press="handleWizardCancel"/>
 						</OverflowToolbar>
 					</footer>
 				</Page>

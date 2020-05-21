@@ -11,6 +11,37 @@ sap.ui.define([
 			this._oNavContainer = this.byId("wizardNavContainer");
 			this._oWizardContentPage = this.byId("wizardContentPage");
 
+			this._programDetails = undefined;
+			this._users = [];
+			this._psps = [];
+			
+		},
+
+		firstNameValidation: function () {
+			
+		},
+		
+		lastNameValidation: function () {
+			
+		},
+		
+		usernameValidation: function () {
+			
+		},
+		
+		passwordValidation: function () {
+			var firstName = this.byId("firstName").getValue();
+			var lastName = this.byId("lastName").getValue();
+			var username = this.byId("username").getValue();
+			var password = this.byId("password").getValue();
+			
+			if(firstName == "" || lastName == "" || username == "" || password == "") {
+				this._wizard.invalidateStep(this.byId("CreateUsersStep"));
+			}
+			else {
+				this._wizard.validateStep(this.byId("CreateUsersStep"));
+			}
+			
 		},
 
 		backToWizardContent: function () {
@@ -44,7 +75,7 @@ sap.ui.define([
 		},
 
 		handleWizardCancel: function () {
-			this._handleMessageBoxOpen("Are you sure you want to cancel?", "warning");
+			this._handleMessageBoxOpen("All input data will be lost. Are you sure you want to cancel program creation?", "warning");
 		}
 		
 	});
