@@ -91,7 +91,7 @@
 					<ObjectPageSubSection>
 						<blocks>
 							<m:Table
-								id="suppliersTable"
+								id="usersTable"
 								items="{path : 'details>/users'}">
 								<m:columns>
 									<m:Column/>
@@ -115,7 +115,7 @@
 					<ObjectPageSubSection>
 						<blocks>
 							<m:Table
-								id="pspTable"
+								id="pspsTable"
 								items="{path : 'details>/psps'}">
 								<m:columns>
 									<m:Column/>

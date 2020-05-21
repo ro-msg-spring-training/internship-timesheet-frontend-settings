@@ -5,7 +5,7 @@ sap.ui.define([
 	"sap/m/MessageBox",
 	"sap/ui/core/Fragment",
 	"sap/m/MessageToast"
-], function (Controller, JSONModel, MessageBox, Fragment, MessageToast) {
+], function (Constants, Controller, JSONModel, MessageBox, Fragment, MessageToast) {
 	"use strict";
 
 	return Controller.extend("sap.ui.demo.fiori2.controller.Wizard", {
@@ -13,6 +13,14 @@ sap.ui.define([
 			this._wizard = this.byId("CreateProgramWizard");
 			this._oNavContainer = this.byId("wizardNavContainer");
 			this._oWizardContentPage = this.byId("wizardContentPage");
+			
+			Fragment.load({
+				name: "sap.ui.demo.fiori2.view.Review",
+				controller: this
+			}).then(function (oWizardReviewPage) {
+				this._oWizardReviewPage = oWizardReviewPage;
+				this._oNavContainer.addPage(this._oWizardReviewPage);
+			}.bind(this));
 			
 			var oJSONData = {
 				count: 0
@@ -75,11 +83,6 @@ sap.ui.define([
 		},
 		
 		onAddUser: function () {
-			this.getView().byId("firstName").setValue("");
-			this.getView().byId("lastName").setValue("");
-			this.getView().byId("username").setValue("");
-			this.getView().byId("password").setValue("");
-			
 			var firstName = this.byId("firstName").getValue();
 			var lastName = this.byId("lastName").getValue();
 			var username = this.byId("username").getValue();
@@ -99,6 +102,12 @@ sap.ui.define([
 		
 			console.log(this._users);
 			
+			this.oView.getModel("users").setProperty("/createdUsersData", this._users)
+			
+			this.getView().byId("firstName").setValue("");
+			this.getView().byId("lastName").setValue("");
+			this.getView().byId("username").setValue("");
+			this.getView().byId("password").setValue("");
 		},
 
 		handleDisplayUsers: function (oEvent) {
@@ -150,7 +159,28 @@ sap.ui.define([
 
 		handleWizardCancel: function () {
 			this._handleMessageBoxOpen("All input data will be lost. Are you sure you want to cancel program creation?", "warning");
-		}
+		},
+		
+		handleWizardSubmit: function () {
+			this._handleMessageBoxOpen("Are you sure you want to submit your report?", "confirm");
+			// POST program, users, psps
+		},
+		
+		wizardCompletedHandler: function () {
+			this._oNavContainer.to(this._oWizardReviewPage);
+		},
+		
+		editStepOne: function () {
+			this._handleNavigationToStep(0);
+		},
+
+		editStepTwo: function () {
+			this._handleNavigationToStep(1);
+		},
+
+		editStepThree: function () {
+			this._handleNavigationToStep(2);
+		},
 
 	});
 });
