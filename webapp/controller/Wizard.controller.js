@@ -1,8 +1,10 @@
 sap.ui.define([
+	"../Constants",
 	"sap/ui/core/mvc/Controller",
 	"sap/ui/model/json/JSONModel",
-	"sap/m/MessageBox"
-], function (Controller, JSONModel, MessageBox) {
+	"sap/m/MessageBox",
+	"sap/m/MessageToast"
+], function (Constants, Controller, JSONModel, MessageBox, MessageToast) {
 	"use strict";
 
 	return Controller.extend("sap.ui.demo.fiori2.controller.Wizard", {
@@ -10,38 +12,62 @@ sap.ui.define([
 			this._wizard = this.byId("CreateProgramWizard");
 			this._oNavContainer = this.byId("wizardNavContainer");
 			this._oWizardContentPage = this.byId("wizardContentPage");
+			
+			var oJSONData = {
+				count: 0
+			};
+
+			var oModel = new sap.ui.model.json.JSONModel(oJSONData);
 
 			this._programDetails = undefined;
 			this._users = [];
 			this._psps = [];
+
+			$.ajax({
+				type: "GET",
+				contentType: false,
+				url: Constants.BASE_URL + Constants.USERS_PATH,
+				dataType: "json",
+				async: false,
+				success: function (usersData, textStatus, jqXHR) {
+					oModel.setProperty("/usersData", usersData);
+				}
+			})
 			
+			this.oView.setModel(oModel, "users");
+
 		},
 
-		firstNameValidation: function () {
-			
-		},
-		
-		lastNameValidation: function () {
-			
-		},
-		
 		usernameValidation: function () {
-			
+			var users = this.oView.getModel("users").getData().usersData;
+			var countUserNames = 0;
+			var userName = this.byId("username").getValue();
+			for (var i = 0; i < users.length; i++)
+			{
+				if (userName === users[i].userName)
+				{
+					countUserNames += 1;
+				}
+			}
+			if (countUserNames > 1){
+				this._wizard.invalidateStep(this.byId("CreateUsersStep"));
+			} else {
+				this._wizard.validateStep(this.byId("CreateUsersStep"));
+			}
 		},
-		
+
 		passwordValidation: function () {
 			var firstName = this.byId("firstName").getValue();
 			var lastName = this.byId("lastName").getValue();
 			var username = this.byId("username").getValue();
 			var password = this.byId("password").getValue();
-			
-			if(firstName == "" || lastName == "" || username == "" || password == "") {
+
+			if (firstName == "" || lastName == "" || username == "" || password == "") {
 				this._wizard.invalidateStep(this.byId("CreateUsersStep"));
-			}
-			else {
+			} else {
 				this._wizard.validateStep(this.byId("CreateUsersStep"));
 			}
-			
+
 		},
 
 		backToWizardContent: function () {
@@ -77,6 +103,6 @@ sap.ui.define([
 		handleWizardCancel: function () {
 			this._handleMessageBoxOpen("All input data will be lost. Are you sure you want to cancel program creation?", "warning");
 		}
-		
+
 	});
 });

@@ -26,9 +26,9 @@
 						<WizardStep id="CreateUsersStep" title="{i18n>createUsersStep}" validated="false" activate="createUsersStepValidation">
 							<form:SimpleForm editable="true">
 								<Label text="{i18n>firstName}"/>
-								<Input id="firstName" placeholder="{i18n>enterFirstName}" value="" liveChange="firstNameValidation" valueState="{/firstNameState}"/>
+								<Input id="firstName" placeholder="{i18n>enterFirstName}" value="" valueState="{/firstNameState}"/>
 								<Label text="{i18n>lastName}"/>
-								<Input id="lastName" placeholder="{i18n>enterLastName}" value="" liveChange="lastNameValidation" valueState="{/lastNameState}"/>
+								<Input id="lastName" placeholder="{i18n>enterLastName}" value="" valueState="{/lastNameState}"/>
 								<Label text="{i18n>username}"/>
 								<Input id="username" placeholder="{i18n>enterUsername}" value="" liveChange="usernameValidation" valueState="{/usernameState}"/>
 								<Label text="{i18n>password}"/>
