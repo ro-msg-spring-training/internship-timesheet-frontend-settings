@@ -14,6 +14,7 @@
 					<ToolbarSpacer/>
 					<OverflowToolbarButton icon="sap-icon://filter" tooltip="{i18n>filterMessage}" id = "filterButton" type="Transparent" press=".onFilter"/>
 					<OverflowToolbarButton icon="sap-icon://sort"  type="Transparent" press=".onSort"/>
+					<OverflowToolbarButton icon="sap-icon://add" type="Transparent" press=".onAdd"/>
 				</OverflowToolbar>
 				<Table id="programsTable" inset="false" items="{ path: 'model>/programs', sorter: { path: 'programName' }}"
 					class="sapFDynamicPageAlignContent" width="auto">

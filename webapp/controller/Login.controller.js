@@ -36,7 +36,7 @@ sap.ui.define([
     			data: myformData,
 				url: Constants.BASE_URL + Constants.LOGIN_PATH,  
     			success: function (response) {
-					oRouter.navTo("wizard", true);
+					oRouter.navTo("master", true);
     			},
     			error: function (e,xhr,textStatus,err,data) {
     				MessageToast.show("Invalid username or password or you are not an admin");

@@ -82,6 +82,11 @@ sap.ui.define([
 			this.oRouter.navTo("detail", {
 				programId: programId
 			});
+		},
+        
+        onAdd: function (oEvent) {
+			var oRouter = sap.ui.core.UIComponent.getRouterFor(this);
+			oRouter.navTo("wizard", true);
 		}
 	});
 });

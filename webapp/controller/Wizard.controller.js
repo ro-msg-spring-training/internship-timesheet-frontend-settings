@@ -3,17 +3,38 @@ sap.ui.define([
 	"sap/ui/core/mvc/Controller",
 	"sap/ui/model/json/JSONModel",
 	"sap/m/MessageBox",
+	"sap/m/Button",
+	"sap/m/Dialog",
+	"sap/m/List",
+	"sap/m/StandardListItem",
 	"sap/ui/core/Fragment",
 	"sap/m/MessageToast"
-], function (Constants, Controller, JSONModel, MessageBox, Fragment, MessageToast) {
+], function (Constants, Controller, JSONModel, MessageBox, Button, Dialog, List, StandardListItem, Fragment, MessageToast) {
 	"use strict";
 
 	return Controller.extend("sap.ui.demo.fiori2.controller.Wizard", {
+		
+		getModel : function (sName) {
+			return this.getView().getModel(sName);
+		},
+		
+		setModel : function (oModel, sName) {
+			return this.getView().setModel(oModel, sName);
+		},
+		
 		onInit: function () {
 			this._wizard = this.byId("CreateProgramWizard");
 			this._oNavContainer = this.byId("wizardNavContainer");
 			this._oWizardContentPage = this.byId("wizardContentPage");
-
+			
+			var oDataPsp = {
+				pspNames: []
+			};
+			var oModelPsp = new JSONModel(oDataPsp);
+        	this.getView().setModel(oModelPsp, "pspModel");
+        	
+			this._pspDialog = null;
+			
 			Fragment.load({
 				name: "sap.ui.demo.fiori2.view.Review",
 				controller: this
@@ -52,7 +73,7 @@ sap.ui.define([
 				success: function (usersData, textStatus, jqXHR) {
 					oModel.setProperty("/usersData", usersData);
 				}
-			})
+			});
 
 			this.oView.setModel(oModel, "users");
 
@@ -78,7 +99,6 @@ sap.ui.define([
 					$('#' + oID).attr("disabled", "disabled");
 				}
 			}, this.oEndDatePicker);
-
 		},
 
 		_validateProgramNameInput: function (oInput) {
@@ -114,6 +134,7 @@ sap.ui.define([
 
 			return bValidationError;
 		},
+		
 		onChange: function (oEvent) {
 			var oInput = oEvent.getSource();
 			this._validateProgramNameInput(oInput);
@@ -139,6 +160,7 @@ sap.ui.define([
 			this._createProgramStepValidation();
 			return bValidationError;
 		},
+		
 		_createProgramStepValidation: function () {
 			if (this.oStartDatePicker.getValue() !== "" && this.oEndDatePicker.getValue() !== "" && this.oView.byId("programName").getValue() !==
 				"" && this.oStartDatePicker.getValueState() !== "Error" && this.oEndDatePicker.getValueState() !== "Error" && this.oView.byId(
@@ -205,7 +227,7 @@ sap.ui.define([
 			this.getView().byId("username").setValue("");
 			this.getView().byId("password").setValue("");
 		},
-
+		
 		handleDisplayUsers: function (oEvent) {
 			var oButton = oEvent.getSource();
 			if (!this._oDialog) {
@@ -254,9 +276,9 @@ sap.ui.define([
 		},
 
 		handleWizardCancel: function () {
-			this._handleMessageBoxOpen("All input data will be lost. Are you sure you want to cancel program creation?", "warning");
+			this._handleMessageBoxOpen("All input data will be lost. Are you sure you want to cancel?", "warning");
 		},
-
+		
 		handleWizardSubmit: function () {
 			this._handleMessageBoxOpen("Are you sure you want to submit your report?", "confirm");
 			// POST program, users, psps
@@ -277,6 +299,51 @@ sap.ui.define([
 		editStepThree: function () {
 			this._handleNavigationToStep(2);
 		},
-
+		
+		createPspValidation: function () {
+			if(this.getView().byId("PspName").getValue() == "") {
+				this._wizard.invalidateStep(this.byId("CreatePSPStep"));
+			}
+		},
+		
+		onAddPsp: function (oEvent) {
+			var pspName = this.getView().byId("PspName").getValue();
+			
+			var oModelPsp = this.getModel("pspModel");
+			oModelPsp.oData.pspNames.push(pspName);
+			
+			this.getView().byId("createdPsps").setText(oModelPsp.oData.pspNames);
+			
+			this.getView().byId("PspName").setValue("");
+		},
+		
+		onViewPsps: function (oEvent) {
+			var oModelPsp = this.getModel("pspModel");
+			this.pspDialog = null;
+			
+			if(!this._pspDialog) {
+					this._pspDialog = new Dialog({
+						title: "{i18n>psps}",
+						content: new List({
+							items: {
+								path: "{/oModel.oData.pspNames}",
+								template: new StandardListItem({
+								})
+							}
+						}),
+						endButton: new Button({
+							text: "Close",
+							press: function () {
+								this._pspDialog.close();
+							}.bind(this)
+						})
+					});
+				//to get access to the global model
+				this.getView().addDependent(this._pspDialog);
+			}
+			
+			this._pspDialog.open();
+		}
+		
 	});
 });

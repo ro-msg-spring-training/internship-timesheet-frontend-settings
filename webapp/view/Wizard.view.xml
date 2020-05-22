@@ -37,7 +37,24 @@
 								<Input id="password" placeholder="{i18n>enterPassword}" value="" liveChange="passwordValidation" valueState="{/passwordState}"/>
 							</form:SimpleForm>
 						</WizardStep>
-						<WizardStep id="CreatePSPStep" title="{i18n>createPSPStep}" validated="true"></WizardStep>
+						<WizardStep id="CreatePSPStep"
+										title="Create PSP"
+										validated="true">
+								<OverflowToolbar class="sapFDynamicPageAlignContent">
+									<ToolbarSpacer/>
+										<Button text="{i18n>viewExistingPsps}" press=".onViewPsps"/>
+										<OverflowToolbarButton icon="sap-icon://add" type="Transparent" press=".onAddPsp"/>
+								</OverflowToolbar>
+								<form:SimpleForm editable="true">
+									<VBox alignItems="End">
+										<HBox alignItems="Center">
+											<Text id="createdPsps"/>
+										</HBox>
+									</VBox>
+									<Label text="{i18n>pspName}" required="true"/>
+									<Input id="PspName" placeholder="{i18n>pspNameInput}" value="{/pspName}"/>
+								</form:SimpleForm>
+							</WizardStep>
 					</Wizard>
 				</content>
 				<footer>
