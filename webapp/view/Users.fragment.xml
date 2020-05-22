@@ -1,26 +1,23 @@
-<core:FragmentDefinition
-	xmlns="sap.m"
-	xmlns:core="sap.ui.core">
-	<TableSelectDialog
-		noDataText="No users"
-		title="Added Users"
-		search=".handleSearch"
-		confirm=".handleClose"
-		cancel=".handleClose"
-		items="{
-			path : '/ProductCollection',
-			sorter : {
-				path : 'Name',
-				descending : false
-			}
-		}">
-		<ColumnListItem>
-			<cells>
-				
-			</cells>
-		</ColumnListItem>
-		<columns>
-			
-		</columns>
-	</TableSelectDialog>
+<core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core">
+	<Dialog>
+		<content>
+		<Table mode="SingleSelectMaster" itemPress=".handleClose" noDataText="No users" items="{path : 'users>/createdUsersData'}">
+			<ColumnListItem>
+				<cells>
+					<ObjectIdentifier title="{users>firstName} {users>lastName}" text="Username: {users>username} Password: {users>password}"/>
+				</cells>
+			</ColumnListItem>
+			<columns>
+				<Column width="12em">
+					<header>
+						<Text text="Users"/>
+					</header>
+				</Column>
+			</columns>
+		</Table>
+        </content>
+        <beginButton>
+            <Button text="Cancel" press=".onExit"/>
+        </beginButton>
+	</Dialog>
 </core:FragmentDefinition>

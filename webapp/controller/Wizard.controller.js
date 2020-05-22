@@ -8,8 +8,9 @@ sap.ui.define([
 	"sap/m/List",
 	"sap/m/StandardListItem",
 	"sap/ui/core/Fragment",
-	"sap/m/MessageToast"
-], function (Constants, Controller, JSONModel, MessageBox, Button, Dialog, List, StandardListItem, Fragment, MessageToast) {
+	"sap/m/MessageToast",
+	"sap/ui/core/syncStyleClass"
+], function (Constants, Controller, JSONModel, MessageBox, Button, Dialog, List, StandardListItem, Fragment, MessageToast, syncStyleClass) {
 	"use strict";
 
 	return Controller.extend("sap.ui.demo.fiori2.controller.Wizard", {
@@ -48,6 +49,7 @@ sap.ui.define([
 				programName: "",
 				startDate: "",
 				endDate: "",
+				selectedWorkingHours: "4",
 				workingHours: [{
 					value: "4"
 				}, {
@@ -56,8 +58,9 @@ sap.ui.define([
 					value: "8",
 				}]
 			};
-
+			
 			var oModel = new sap.ui.model.json.JSONModel(oJSONData);
+			this._validatedCreateUserStep = false;
 			this._programDetails = undefined;
 			this.oModelUsers = {
 				users: []
@@ -112,6 +115,7 @@ sap.ui.define([
 				sValueState = "Error";
 				bValidationError = true;
 			}
+			
 			var progamNameFormData = new FormData();
 			progamNameFormData.append("name", oInput.getValue());
 
@@ -119,16 +123,21 @@ sap.ui.define([
 				type: "POST",
 				processData: false,
 				contentType: false,
-				data: progamNameFormData,
+				data:progamNameFormData,
 				url: Constants.BASE_URL + Constants.PROGRAM_NAME_VALID_PATH,
 				async: false,
 				success: function (data, textStatus, jqXHR) {
 					if (data === true) {
 						sValueState = "Error";
 						bValidationError = true;
-					}
+					} 
 				}
 			});
+			
+			if(!bValidationError) {
+				this.oView.getModel("users").setProperty("/programName", oInput.getValue());
+			}
+			
 			oInput.setValueState(sValueState);
 			oInput.setValueStateText(this.getView().getModel("i18n").getResourceBundle().getText("programNameError"));
 
@@ -150,6 +159,9 @@ sap.ui.define([
 					sValueStateStart = "Error";
 					sValueStateEnd = "Error";
 					bValidationError = true;
+				} else {
+					this.oView.getModel("users").setProperty("/startDate", this.oStartDatePicker.getValue());
+					this.oView.getModel("users").setProperty("/endDate", this.oEndDatePicker.getValue());
 				}
 			}
 			this.oStartDatePicker.setValueState(sValueStateStart);
@@ -158,7 +170,12 @@ sap.ui.define([
 			this.oEndDatePicker.setValueStateText(this.getView().getModel("i18n").getResourceBundle().getText("dateError"));
 
 			this._createProgramStepValidation();
+
 			return bValidationError;
+		},
+		
+		onWorkingHoursSelected: function () {
+			this.oView.getModel("users").setProperty("/selectedWorkingHours", this.byId("workingHoursSelect").getSelectedItem().getText());
 		},
 		
 		_createProgramStepValidation: function () {
@@ -175,14 +192,22 @@ sap.ui.define([
 			var countUserNames = 0;
 			var userName = this.byId("username").getValue();
 			for (var i = 0; i < users.length; i++) {
-				if (userName === users[i].userName) {
+				if (userName === users[i].username) {
 					countUserNames += 1;
 				}
 			}
-			if (countUserNames > 1) {
-				this._wizard.invalidateStep(this.byId("CreateUsersStep"));
+			
+			var isPresent = false;
+			for(var user in this._users) {
+				if(this._users[user].username === userName) {
+					isPresent = true;
+				}
+			}
+			
+			if (countUserNames > 0 || isPresent) {
+				return false;
 			} else {
-				this._wizard.validateStep(this.byId("CreateUsersStep"));
+				return true;
 			}
 		},
 
@@ -193,9 +218,9 @@ sap.ui.define([
 			var password = this.byId("password").getValue();
 
 			if (firstName == "" || lastName == "" || username == "" || password == "") {
-				this._wizard.invalidateStep(this.byId("CreateUsersStep"));
+				this._validatedCreateUserStep = false;
 			} else {
-				this._wizard.validateStep(this.byId("CreateUsersStep"));
+				this._validatedCreateUserStep = true;
 			}
 
 		},
@@ -213,23 +238,43 @@ sap.ui.define([
 				password: password
 			};
 
-			//var oViewUsers = this.getView                                                 
-			//this._users.push(oModel.setData(userData));
+			var isPresent = this.usernameValidation();
 
-			this._users.push(userData);
-
-			console.log(this._users);
-
-			this.oView.getModel("users").setProperty("/createdUsersData", this._users)
-
-			this.getView().byId("firstName").setValue("");
-			this.getView().byId("lastName").setValue("");
-			this.getView().byId("username").setValue("");
-			this.getView().byId("password").setValue("");
+			if(!isPresent) {
+				MessageToast.show("Username already exists!", Error);
+				this._wizard.invalidateStep(this.byId("CreateUsersStep"));
+			}
+			else {
+				//var oViewUsers = this.getView                                                 
+				//this._users.push(oModel.setData(userData));
+				
+				MessageToast.show("User added!");
+	
+				this._users.push(userData);
+	
+				console.log(this._users);
+	
+				this.oView.getModel("users").setProperty("/createdUsersData", this._users);
+	
+				this.getView().byId("firstName").setValue("");
+				this.getView().byId("lastName").setValue("");
+				this.getView().byId("username").setValue("");
+				this.getView().byId("password").setValue("");
+				
+				this._wizard.validateStep(this.byId("CreateUsersStep"));
+				
+			}
+		},
+		
+		onExit: function () {
+			if (this._oDialog) {
+				this._oDialog.close();
+			}
 		},
 		
 		handleDisplayUsers: function (oEvent) {
 			var oButton = oEvent.getSource();
+			
 			if (!this._oDialog) {
 				Fragment.load({
 					name: "sap.ui.demo.fiori2.view.Users",
@@ -243,6 +288,22 @@ sap.ui.define([
 				this._configDialog(oButton);
 				this._oDialog.open();
 			}
+		},
+		
+		_configDialog: function (oButton) {
+			var sResponsivePadding = oButton.data("responsivePadding");
+			var sResponsiveStyleClasses = "sapUiResponsivePadding--header sapUiResponsivePadding--subHeader sapUiResponsivePadding--content sapUiResponsivePadding--footer";
+
+			if (sResponsivePadding) {
+				this._oDialog.addStyleClass(sResponsiveStyleClasses);
+			} else {
+				this._oDialog.removeStyleClass(sResponsiveStyleClasses);
+			}
+
+			this.getView().addDependent(this._oDialog);
+
+			// toggle compact style
+			syncStyleClass("sapUiSizeCompact", this.getView(), this._oDialog);
 		},
 
 		backToWizardContent: function () {
@@ -308,13 +369,39 @@ sap.ui.define([
 		
 		onAddPsp: function (oEvent) {
 			var pspName = this.getView().byId("PspName").getValue();
+
+			var isPresent = false;
 			
-			var oModelPsp = this.getModel("pspModel");
+			for(var psp in this._psps) {
+				if(this._psps[psp].name === pspName) {
+					isPresent = true;
+				}
+			}
+			
+			if(!isPresent) {
+				var pspData = {
+					name: pspName
+				};
+				this._psps.push(pspData);
+				this.oView.getModel("users").setProperty("/createdPspsData", this._psps);
+			
+				this.getView().byId("PspName").setValue("");
+				MessageToast.show("PSP added!");
+				
+				this._wizard.validateStep(this.byId("CreatePSPStep"));
+			}
+			else {
+				MessageToast.show("PSP name already used!!!", Error);
+			}
+			
+			console.log(this._psps);
+			
+			/*var oModelPsp = this.getModel("pspModel");
 			oModelPsp.oData.pspNames.push(pspName);
 			
 			this.getView().byId("createdPsps").setText(oModelPsp.oData.pspNames);
 			
-			this.getView().byId("PspName").setValue("");
+			this.getView().byId("PspName").setValue("");*/
 		},
 		
 		onViewPsps: function (oEvent) {

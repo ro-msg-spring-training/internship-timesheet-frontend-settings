@@ -4,15 +4,17 @@
 			<form:SimpleForm title="1. {i18n>reviewProgramInfo}" minWidth="1024" editable="false" layout="ResponsiveGridLayout">
 				<form:content>
 					<Label text="{i18n>programName}"/>
-					<Text id="ProgramName" text=""/>
+					<Text id="ProgramName" text="{users>/programName}"/>
 					<Label text="{i18n>programStartDate}"/>
-					<Text id="ProgramStartDate" text=""/>
+					<Text id="ProgramStartDate" text="{users>/startDate}"/>
 					<Label text="{i18n>programEndDate}"/>
-					<Text id="ProgramEndDate" text=""/>
+					<Text id="ProgramEndDate" text="{users>/endDate}"/>
 					<Label text="{i18n>programWorkingHours}"/>
-					<Text id="ProgramWorkingHours" text=""/>
-					<Link press="editStepOne" text="Edit"/>
+					<Text id="ProgramWorkingHours" text="{users>/selectedWorkingHours}"/>
 				</form:content>
+				<VBox alignItems="End">
+					<Link press="editStepOne" text="Edit"/>
+				</VBox>
 			</form:SimpleForm>
 			<form:SimpleForm title="2. {i18n>reviewUsersInfo}" minWidth="1024" editable="false" layout="ResponsiveGridLayout">
 				<form:content>
@@ -28,25 +30,29 @@
 							</ColumnListItem>
 						</items>
 					</Table>
-					<Link press="editStepTwo" text="Edit"/>
 				</form:content>
+				<VBox alignItems="End">
+					<Link press="editStepTwo" text="Edit"/>
+				</VBox>
 			</form:SimpleForm>
 			<form:SimpleForm title="3. {i18n>reviewPspElementsInfo}" minWidth="1024" editable="false" layout="ResponsiveGridLayout">
 				<form:content>
-					<Table id="pspsTable" items="{path : ''}">
+					<Table id="pspsTable" items="{path : 'users>/createdPspsData'}">
 						<columns>
 							<Column/>
 						</columns>
 						<items>
 							<ColumnListItem>
 								<cells>
-									<ObjectIdentifier text=""/>
+									<ObjectIdentifier text="{users>name}"/>
 								</cells>
 							</ColumnListItem>
 						</items>
 					</Table>
-					<Link press="editStepThree" text="Edit"/>
 				</form:content>
+				<VBox alignItems="End">
+					<Link press="editStepThree" text="Edit"/>
+				</VBox>
 			</form:SimpleForm>
 		</content>
 		<footer>
