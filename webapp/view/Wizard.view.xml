@@ -5,30 +5,27 @@
 			<Page id="wizardContentPage" showHeader="false">
 				<content>
 					<Wizard id="CreateProgramWizard" class="sapUiResponsivePadding--header sapUiResponsivePadding--content" complete="wizardCompletedHandler">
-						<WizardStep id="CreateProgramStep" title="{i18n>createProgramStep}" validated="true">
+						<WizardStep id="CreateProgramStep" title="{i18n>createProgramStep}" validated="false" activate="createProgramStepValidation">
 							<form:SimpleForm editable="true">
 								<Label text="{i18n>programName}"/>
-								<Input id="programName" placeholder="{i18n>programNamePlaceholder}" value="" liveChange="firstNameValidation" valueState="{/firstNameState}"/>
+								<Input id="programName" placeholder="{i18n>programNamePlaceholder}"
+									value="{ path : '/programName', type : 'sap.ui.model.type.String', constraints : { minLength: 1, maxLength: 255 } }" change="onChange"
+									liveChange="onChange" valueState="{/firstNameState}"/>
 								<Label text="{i18n>programStartDate}"/>
-								<DatePicker id="startDate" value="" valueFormat="YYYY-MM-dd" displayFormat="YYYY-MM-dd" placeholder="{i18n>dateFormat}"/>
+								<DatePicker id="startDate" valueFormat="YYYY-MM-dd" displayFormat="YYYY-MM-dd" placeholder="{i18n>dateFormat}"
+									value="{ path : '/startDate', type : 'sap.ui.model.type.Data'}" change="onDateValidation"/>
 								<Label text="{i18n>programEndDate}"/>
-								<DatePicker id="endDate" value="" valueFormat="YYYY-MM-dd" displayFormat="YYYY-MM-dd" placeholder="{i18n>dateFormat}"/>
+								<DatePicker id="endDate" valueFormat="YYYY-MM-dd" displayFormat="YYYY-MM-dd" placeholder="{i18n>dateFormat}"
+									value="{ path : '/endDate', type : 'sap.ui.model.type.Data'}" change="onDateValidation"/>
 								<Label text="{i18n>programWorkingHours}"/>
-								<ComboBox id="workingHoursSelect" placeholder="{i18n>programWorkingHoursPlaceholder}">
-									<core:Item key="4" text="4" enabled="true"/>
-									<core:Item key="5" text="5" enabled="true"/>
-									<core:Item key="6" text="6" enabled="true"/>
-									<core:Item key="7" text="7" enabled="true"/>
-									<core:Item key="8" text="8" enabled="true"/>
-								</ComboBox>
+								<Select id="workingHoursSelect" items="{users>/workingHours}">
+									<core:Item text="{users>value}"/>
+								</Select>
 							</form:SimpleForm>
 						</WizardStep>
 						<WizardStep id="CreateUsersStep" title="{i18n>createUsersStep}" validated="false" activate="createUsersStepValidation">
-							<OverflowToolbarButton icon="sap-icon://add"  type="Transparent" press=".onAddUser"/>
-								<Button
-									class="sapUiSmallMarginBottom"
-									text="Show Added Users"
-									press=".handleDisplayUsers" />
+							<OverflowToolbarButton icon="sap-icon://add" type="Transparent" press=".onAddUser"/>
+							<Button class="sapUiSmallMarginBottom" text="Show Added Users" press=".handleDisplayUsers"/>
 							<form:SimpleForm editable="true">
 								<Label text="{i18n>firstName}"/>
 								<Input id="firstName" placeholder="{i18n>enterFirstName}" value="" valueState="{/firstNameState}"/>

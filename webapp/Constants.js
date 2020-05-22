@@ -7,7 +7,8 @@ function() {
         LOGIN_PATH: "/adminLogin",
         USERS_PATH: "/users",
         PROGRAMS_PATH: "/programs",
-        PSPS_PATH:"/psps"
+        PSPS_PATH:"/psps",
+        PROGRAM_NAME_VALID_PATH : "/programNameValidation"
     };
 
     return constants;

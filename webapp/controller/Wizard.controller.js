@@ -13,7 +13,7 @@ sap.ui.define([
 			this._wizard = this.byId("CreateProgramWizard");
 			this._oNavContainer = this.byId("wizardNavContainer");
 			this._oWizardContentPage = this.byId("wizardContentPage");
-			
+
 			Fragment.load({
 				name: "sap.ui.demo.fiori2.view.Review",
 				controller: this
@@ -21,20 +21,28 @@ sap.ui.define([
 				this._oWizardReviewPage = oWizardReviewPage;
 				this._oNavContainer.addPage(this._oWizardReviewPage);
 			}.bind(this));
-			
+
 			var oJSONData = {
-				count: 0
+				count: 0,
+				programName: "",
+				startDate: "",
+				endDate: "",
+				workingHours: [{
+					value: "4"
+				}, {
+					value: "6"
+				}, {
+					value: "8",
+				}]
 			};
 
 			var oModel = new sap.ui.model.json.JSONModel(oJSONData);
-
 			this._programDetails = undefined;
 			this.oModelUsers = {
-				users:[]
+				users: []
 			};
 			this._users = [];
 			this._psps = [];
-
 			$.ajax({
 				type: "GET",
 				contentType: false,
@@ -45,23 +53,111 @@ sap.ui.define([
 					oModel.setProperty("/usersData", usersData);
 				}
 			})
-			
+
 			this.oView.setModel(oModel, "users");
 
+			// attach handlers for validation errors
+			sap.ui.getCore().getMessageManager().registerObject(this.oView.byId("programName"), true);
+			sap.ui.getCore().getMessageManager().registerObject(this.oView.byId("startDate"), true);
+			sap.ui.getCore().getMessageManager().registerObject(this.oView.byId("endDate"), true);
+
+			this.oStartDatePicker = this.getView().byId("startDate");
+			this.oStartDatePicker.addEventDelegate({
+				onAfterRendering: function () {
+					var oDateInner = this.$().find('.sapMInputBaseInner');
+					var oID = oDateInner[0].id;
+					$('#' + oID).attr("disabled", "disabled");
+				}
+			}, this.oStartDatePicker);
+
+			this.oEndDatePicker = this.getView().byId("endDate");
+			this.oEndDatePicker.addEventDelegate({
+				onAfterRendering: function () {
+					var oDateInner = this.$().find('.sapMInputBaseInner');
+					var oID = oDateInner[0].id;
+					$('#' + oID).attr("disabled", "disabled");
+				}
+			}, this.oEndDatePicker);
+
+		},
+
+		_validateProgramNameInput: function (oInput) {
+			var oBinding = oInput.getBinding("value");
+			var sValueState = "None";
+			var bValidationError = false;
+
+			try {
+				oBinding.getType().validateValue(oInput.getValue());
+			} catch (oException) {
+				sValueState = "Error";
+				bValidationError = true;
+			}
+			var progamNameFormData = new FormData();
+			progamNameFormData.append("name", oInput.getValue());
+
+			$.ajax({
+				type: "POST",
+				processData: false,
+				contentType: false,
+				data: progamNameFormData,
+				url: Constants.BASE_URL + Constants.PROGRAM_NAME_VALID_PATH,
+				async: false,
+				success: function (data, textStatus, jqXHR) {
+					if (data === true) {
+						sValueState = "Error";
+						bValidationError = true;
+					}
+				}
+			});
+			oInput.setValueState(sValueState);
+			oInput.setValueStateText(this.getView().getModel("i18n").getResourceBundle().getText("programNameError"));
+
+			return bValidationError;
+		},
+		onChange: function (oEvent) {
+			var oInput = oEvent.getSource();
+			this._validateProgramNameInput(oInput);
+			this._createProgramStepValidation();
+		},
+
+		onDateValidation: function (oEvent) {
+			var sValueStateStart = "None";
+			var bValidationError = false;
+			var sValueStateEnd = "None";
+			if (this.oStartDatePicker.getValue() !== "" && this.oEndDatePicker.getValue() !== "") {
+				if (this.oStartDatePicker.getValue() > this.oEndDatePicker.getValue()) {
+					sValueStateStart = "Error";
+					sValueStateEnd = "Error";
+					bValidationError = true;
+				}
+			}
+			this.oStartDatePicker.setValueState(sValueStateStart);
+			this.oStartDatePicker.setValueStateText(this.getView().getModel("i18n").getResourceBundle().getText("dateError"));
+			this.oEndDatePicker.setValueState(sValueStateEnd);
+			this.oEndDatePicker.setValueStateText(this.getView().getModel("i18n").getResourceBundle().getText("dateError"));
+
+			this._createProgramStepValidation();
+			return bValidationError;
+		},
+		_createProgramStepValidation: function () {
+			if (this.oStartDatePicker.getValue() !== "" && this.oEndDatePicker.getValue() !== "" && this.oView.byId("programName").getValue() !==
+				"" && this.oStartDatePicker.getValueState() !== "Error" && this.oEndDatePicker.getValueState() !== "Error" && this.oView.byId(
+					"programName").getValueState() !== "Error") {
+				this._wizard.validateStep(this.byId("CreateProgramStep"));
+			} else
+				this._wizard.invalidateStep(this.byId("CreateProgramStep"));
 		},
 
 		usernameValidation: function () {
 			var users = this.oView.getModel("users").getData().usersData;
 			var countUserNames = 0;
 			var userName = this.byId("username").getValue();
-			for (var i = 0; i < users.length; i++)
-			{
-				if (userName === users[i].userName)
-				{
+			for (var i = 0; i < users.length; i++) {
+				if (userName === users[i].userName) {
 					countUserNames += 1;
 				}
 			}
-			if (countUserNames > 1){
+			if (countUserNames > 1) {
 				this._wizard.invalidateStep(this.byId("CreateUsersStep"));
 			} else {
 				this._wizard.validateStep(this.byId("CreateUsersStep"));
@@ -81,29 +177,29 @@ sap.ui.define([
 			}
 
 		},
-		
+
 		onAddUser: function () {
 			var firstName = this.byId("firstName").getValue();
 			var lastName = this.byId("lastName").getValue();
 			var username = this.byId("username").getValue();
 			var password = this.byId("password").getValue();
-			
+
 			var userData = {
 				firstName: firstName,
 				lastName: lastName,
 				username: username,
 				password: password
 			};
-			
+
 			//var oViewUsers = this.getView                                                 
 			//this._users.push(oModel.setData(userData));
-			
+
 			this._users.push(userData);
-		
+
 			console.log(this._users);
-			
+
 			this.oView.getModel("users").setProperty("/createdUsersData", this._users)
-			
+
 			this.getView().byId("firstName").setValue("");
 			this.getView().byId("lastName").setValue("");
 			this.getView().byId("username").setValue("");
@@ -160,16 +256,16 @@ sap.ui.define([
 		handleWizardCancel: function () {
 			this._handleMessageBoxOpen("All input data will be lost. Are you sure you want to cancel program creation?", "warning");
 		},
-		
+
 		handleWizardSubmit: function () {
 			this._handleMessageBoxOpen("Are you sure you want to submit your report?", "confirm");
 			// POST program, users, psps
 		},
-		
+
 		wizardCompletedHandler: function () {
 			this._oNavContainer.to(this._oWizardReviewPage);
 		},
-		
+
 		editStepOne: function () {
 			this._handleNavigationToStep(0);
 		},
