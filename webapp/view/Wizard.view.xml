@@ -27,13 +27,13 @@
 							<OverflowToolbar class="sapFDynamicPageAlignContent">
 								<ToolbarSpacer/>
 								<Button text="Show Added Users" press=".handleDisplayUsers"/>
-								<OverflowToolbarButton icon="sap-icon://add" type="Transparent" press=".onAddUser"/>
+								<OverflowToolbarButton id="iconAdd" icon="sap-icon://add" type="Transparent" press=".onAddUser"/>
 							</OverflowToolbar>
 							<form:SimpleForm editable="true">
 								<Label text="{i18n>firstName}"/>
-								<Input id="firstName" placeholder="{i18n>enterFirstName}" value="" valueState="{/firstNameState}" width="60%"/>
+								<Input id="firstName" placeholder="{i18n>enterFirstName}" value="" liveChange="handleFirstNameChange" valueState="{/firstNameState}" width="60%"/>
 								<Label text="{i18n>lastName}"/>
-								<Input id="lastName" placeholder="{i18n>enterLastName}" value="" valueState="{/lastNameState}" width="60%"/>
+								<Input id="lastName" placeholder="{i18n>enterLastName}" value="" liveChange="handleLastNameChange" valueState="{/lastNameState}" width="60%"/>
 								<Label text="{i18n>username}"/>
 								<Input id="username" placeholder="{i18n>enterUsername}" value="" valueState="{/usernameState}" width="60%"/>
 								<Label text="{i18n>password}"/>

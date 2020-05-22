@@ -102,6 +102,9 @@ sap.ui.define([
 					$('#' + oID).attr("disabled", "disabled");
 				}
 			}, this.oEndDatePicker);
+			
+			this.validateFirstName = false;
+			this.validateLastName = false;
 		},
 
 		_validateProgramNameInput: function (oInput) {
@@ -148,6 +151,40 @@ sap.ui.define([
 			var oInput = oEvent.getSource();
 			this._validateProgramNameInput(oInput);
 			this._createProgramStepValidation();
+		},
+		
+		handleFirstNameChange: function(oEvent) {
+			var firstName = this.byId("firstName").getValue();	
+			var pattern = RegExp('^[A-Za-z]+$');
+			oEvent.getSource().setValueState("None");
+			if (!pattern.test(firstName)){
+				oEvent.getSource().setValueState("Error");
+				oEvent.getSource().setValueStateText(this.getView().getModel("i18n").getResourceBundle().getText("FirstNameError"));
+				this.byId("iconAdd").setEnabled(false);
+				this.validateFirstName = false;
+			} else {
+				if (this.validateLastName){
+					this.byId("iconAdd").setEnabled(true);
+				}
+				this.validateFirstName = true;
+			}
+		},
+		
+		handleLastNameChange: function(oEvent) {
+			var lastName = this.byId("lastName").getValue();	
+			var pattern = RegExp('^[A-Za-z]+$');
+			oEvent.getSource().setValueState("None");
+			if (!pattern.test(lastName)){
+				oEvent.getSource().setValueState("Error");
+				oEvent.getSource().setValueStateText(this.getView().getModel("i18n").getResourceBundle().getText("LastNameError"));
+				this.byId("iconAdd").setEnabled(false);
+				this.validateLastName = false;
+			} else {
+				if (this.validateFirstName){
+				this.byId("iconAdd").setEnabled(true);
+				}
+				this.validateLastName = true;
+			}
 		},
 
 		onDateValidation: function (oEvent) {
