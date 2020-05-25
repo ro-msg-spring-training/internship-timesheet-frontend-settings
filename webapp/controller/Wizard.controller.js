@@ -27,22 +27,6 @@ sap.ui.define([
 			this._wizard = this.byId("CreateProgramWizard");
 			this._oNavContainer = this.byId("wizardNavContainer");
 			this._oWizardContentPage = this.byId("wizardContentPage");
-			
-			var oDataPsp = {
-				pspNames: []
-			};
-			var oModelPsp = new JSONModel(oDataPsp);
-        	this.getView().setModel(oModelPsp, "pspModel");
-        	
-			this._pspDialog = null;
-			
-			Fragment.load({
-				name: "sap.ui.demo.fiori2.view.Review",
-				controller: this
-			}).then(function (oWizardReviewPage) {
-				this._oWizardReviewPage = oWizardReviewPage;
-				this._oNavContainer.addPage(this._oWizardReviewPage);
-			}.bind(this));
 
 			var oJSONData = {
 				count: 0,
@@ -62,11 +46,10 @@ sap.ui.define([
 			var oModel = new sap.ui.model.json.JSONModel(oJSONData);
 			this._validatedCreateUserStep = false;
 			this._programDetails = undefined;
-			this.oModelUsers = {
-				users: []
-			};
 			this._users = [];
+			this._pspDialog = false;
 			this._psps = [];
+			
 			$.ajax({
 				type: "GET",
 				contentType: false,
@@ -103,8 +86,13 @@ sap.ui.define([
 				}
 			}, this.oEndDatePicker);
 			
-			this.validateFirstName = false;
-			this.validateLastName = false;
+			Fragment.load({
+				name: "sap.ui.demo.fiori2.view.Review",
+				controller: this
+			}).then(function (oWizardReviewPage) {
+				this._oWizardReviewPage = oWizardReviewPage;
+				this._oNavContainer.addPage(this._oWizardReviewPage);
+			}.bind(this));
 		},
 
 		_validateProgramNameInput: function (oInput) {
@@ -151,40 +139,6 @@ sap.ui.define([
 			var oInput = oEvent.getSource();
 			this._validateProgramNameInput(oInput);
 			this._createProgramStepValidation();
-		},
-		
-		handleFirstNameChange: function(oEvent) {
-			var firstName = this.byId("firstName").getValue();	
-			var pattern = RegExp('^[A-Za-z]+$');
-			oEvent.getSource().setValueState("None");
-			if (!pattern.test(firstName)){
-				oEvent.getSource().setValueState("Error");
-				oEvent.getSource().setValueStateText(this.getView().getModel("i18n").getResourceBundle().getText("FirstNameError"));
-				this.byId("iconAdd").setEnabled(false);
-				this.validateFirstName = false;
-			} else {
-				if (this.validateLastName){
-					this.byId("iconAdd").setEnabled(true);
-				}
-				this.validateFirstName = true;
-			}
-		},
-		
-		handleLastNameChange: function(oEvent) {
-			var lastName = this.byId("lastName").getValue();	
-			var pattern = RegExp('^[A-Za-z]+$');
-			oEvent.getSource().setValueState("None");
-			if (!pattern.test(lastName)){
-				oEvent.getSource().setValueState("Error");
-				oEvent.getSource().setValueStateText(this.getView().getModel("i18n").getResourceBundle().getText("LastNameError"));
-				this.byId("iconAdd").setEnabled(false);
-				this.validateLastName = false;
-			} else {
-				if (this.validateFirstName){
-				this.byId("iconAdd").setEnabled(true);
-				}
-				this.validateLastName = true;
-			}
 		},
 
 		onDateValidation: function (oEvent) {
@@ -304,6 +258,9 @@ sap.ui.define([
 		},
 		
 		onExit: function () {
+			if (this._pspDialog) {
+				this._pspDialog.close();
+			}
 			if (this._oDialog) {
 				this._oDialog.close();
 			}
@@ -406,68 +363,55 @@ sap.ui.define([
 		
 		onAddPsp: function (oEvent) {
 			var pspName = this.getView().byId("PspName").getValue();
-
-			var isPresent = false;
+		
+			if(pspName != "" ) {
+				var isPresent = false;
 			
-			for(var psp in this._psps) {
-				if(this._psps[psp].name === pspName) {
-					isPresent = true;
+				for(var psp in this._psps) {
+					if(this._psps[psp].name === pspName) {
+						isPresent = true;
+					}
 				}
-			}
 			
-			if(!isPresent) {
-				var pspData = {
-					name: pspName
-				};
-				this._psps.push(pspData);
-				this.oView.getModel("users").setProperty("/createdPspsData", this._psps);
-			
-				this.getView().byId("PspName").setValue("");
-				MessageToast.show("PSP added!");
+				if(!isPresent) {
+					var pspData = {
+						name: pspName
+					};
 				
-				this._wizard.validateStep(this.byId("CreatePSPStep"));
+					this._psps.push(pspData);
+					this.oView.getModel("users").setProperty("/createdPspsData", this._psps);
+			
+					this.getView().byId("PspName").setValue("");
+					MessageToast.show(this.getView().getModel("i18n").getResourceBundle().getText("pspAdded"));
+				
+					this._wizard.validateStep(this.byId("CreatePSPStep"));
+				}
+				else {
+					MessageToast.show(this.getView().getModel("i18n").getResourceBundle().getText("pspUsed"), Error);
+				}
+			
+				console.log(this._psps);
+			} else {
+				MessageToast.show(this.getView().getModel("i18n").getResourceBundle().getText("completeFields"), Error);
 			}
-			else {
-				MessageToast.show("PSP name already used!!!", Error);
-			}
 			
-			console.log(this._psps);
-			
-			/*var oModelPsp = this.getModel("pspModel");
-			oModelPsp.oData.pspNames.push(pspName);
-			
-			this.getView().byId("createdPsps").setText(oModelPsp.oData.pspNames);
-			
-			this.getView().byId("PspName").setValue("");*/
 		},
 		
 		onViewPsps: function (oEvent) {
-			var oModelPsp = this.getModel("pspModel");
-			this.pspDialog = null;
 			
 			if(!this._pspDialog) {
-					this._pspDialog = new Dialog({
-						title: "{i18n>psps}",
-						content: new List({
-							items: {
-								path: "{/oModel.oData.pspNames}",
-								template: new StandardListItem({
-								})
-							}
-						}),
-						endButton: new Button({
-							text: "Close",
-							press: function () {
-								this._pspDialog.close();
-							}.bind(this)
-						})
-					});
-				//to get access to the global model
+				Fragment.load({
+					name: "sap.ui.demo.fiori2.view.Psp",
+					controller: this
+				}).then(function (oDialog) {
+					this._pspDialog = oDialog;
+					this.getView().addDependent(this._pspDialog);
+					this._pspDialog.open();
+				}.bind(this));
+			} else {
 				this.getView().addDependent(this._pspDialog);
+				this._pspDialog.open();
 			}
-			
-			this._pspDialog.open();
 		}
-		
 	});
 });
