@@ -9,24 +9,26 @@ sap.ui.define([
 	"sap/m/StandardListItem",
 	"sap/ui/core/Fragment",
 	"sap/m/MessageToast",
-	"sap/ui/core/syncStyleClass"
+	"sap/ui/core/syncStyleClass",
+	"sap/ui/core/routing/History"
 ], function (Constants, Controller, JSONModel, MessageBox, Button, Dialog, List, StandardListItem, Fragment, MessageToast, syncStyleClass) {
 	"use strict";
 
 	return Controller.extend("sap.ui.demo.fiori2.controller.Wizard", {
-		
-		getModel : function (sName) {
+
+		getModel: function (sName) {
 			return this.getView().getModel(sName);
 		},
-		
-		setModel : function (oModel, sName) {
+
+		setModel: function (oModel, sName) {
 			return this.getView().setModel(oModel, sName);
 		},
-		
+
 		onInit: function () {
 			this._wizard = this.byId("CreateProgramWizard");
 			this._oNavContainer = this.byId("wizardNavContainer");
 			this._oWizardContentPage = this.byId("wizardContentPage");
+			this.oRouter = this.getOwnerComponent().getRouter();
 
 			var oJSONData = {
 				count: 0,
@@ -42,14 +44,14 @@ sap.ui.define([
 					value: "8",
 				}]
 			};
-			
+
 			var oModel = new sap.ui.model.json.JSONModel(oJSONData);
 			this._validatedCreateUserStep = false;
 			this._programDetails = undefined;
 			this._users = [];
 			this._pspDialog = false;
 			this._psps = [];
-			
+
 			$.ajax({
 				type: "GET",
 				contentType: false,
@@ -85,7 +87,7 @@ sap.ui.define([
 					$('#' + oID).attr("disabled", "disabled");
 				}
 			}, this.oEndDatePicker);
-			
+
 			Fragment.load({
 				name: "sap.ui.demo.fiori2.view.Review",
 				controller: this
@@ -106,7 +108,7 @@ sap.ui.define([
 				sValueState = "Error";
 				bValidationError = true;
 			}
-			
+
 			var progamNameFormData = new FormData();
 			progamNameFormData.append("name", oInput.getValue());
 
@@ -114,27 +116,27 @@ sap.ui.define([
 				type: "POST",
 				processData: false,
 				contentType: false,
-				data:progamNameFormData,
+				data: progamNameFormData,
 				url: Constants.BASE_URL + Constants.PROGRAM_NAME_VALID_PATH,
 				async: false,
 				success: function (data, textStatus, jqXHR) {
 					if (data === true) {
 						sValueState = "Error";
 						bValidationError = true;
-					} 
+					}
 				}
 			});
-			
-			if(!bValidationError) {
+
+			if (!bValidationError) {
 				this.oView.getModel("users").setProperty("/programName", oInput.getValue());
 			}
-			
+
 			oInput.setValueState(sValueState);
 			oInput.setValueStateText(this.getView().getModel("i18n").getResourceBundle().getText("programNameError"));
 
 			return bValidationError;
 		},
-		
+
 		onChange: function (oEvent) {
 			var oInput = oEvent.getSource();
 			this._validateProgramNameInput(oInput);
@@ -164,11 +166,11 @@ sap.ui.define([
 
 			return bValidationError;
 		},
-		
+
 		onWorkingHoursSelected: function () {
 			this.oView.getModel("users").setProperty("/selectedWorkingHours", this.byId("workingHoursSelect").getSelectedItem().getText());
 		},
-		
+
 		_createProgramStepValidation: function () {
 			if (this.oStartDatePicker.getValue() !== "" && this.oEndDatePicker.getValue() !== "" && this.oView.byId("programName").getValue() !==
 				"" && this.oStartDatePicker.getValueState() !== "Error" && this.oEndDatePicker.getValueState() !== "Error" && this.oView.byId(
@@ -177,36 +179,36 @@ sap.ui.define([
 			} else
 				this._wizard.invalidateStep(this.byId("CreateProgramStep"));
 		},
-		
-		handleFirstNameChange: function(oEvent) {
-			var firstName = this.byId("firstName").getValue();	
+
+		handleFirstNameChange: function (oEvent) {
+			var firstName = this.byId("firstName").getValue();
 			var pattern = RegExp('^[A-Za-z]+((\s)?((\'|\-|\.)?([A-Za-z])+))*$');
 			oEvent.getSource().setValueState("None");
-			if (!pattern.test(firstName)){
+			if (!pattern.test(firstName)) {
 				oEvent.getSource().setValueState("Error");
 				oEvent.getSource().setValueStateText(this.getView().getModel("i18n").getResourceBundle().getText("FirstNameError"));
 				this.byId("iconAdd").setEnabled(false);
 				this.validateFirstName = false;
 			} else {
-				if (this.validateLastName){
+				if (this.validateLastName) {
 					this.byId("iconAdd").setEnabled(true);
 				}
 				this.validateFirstName = true;
 			}
 		},
 
-		handleLastNameChange: function(oEvent) {
-			var lastName = this.byId("lastName").getValue();	
+		handleLastNameChange: function (oEvent) {
+			var lastName = this.byId("lastName").getValue();
 			var pattern = RegExp('^[A-Za-z]+((\s)?((\'|\-|\.)?([A-Za-z])+))*$');
 			oEvent.getSource().setValueState("None");
-			if (!pattern.test(lastName)){
+			if (!pattern.test(lastName)) {
 				oEvent.getSource().setValueState("Error");
 				oEvent.getSource().setValueStateText(this.getView().getModel("i18n").getResourceBundle().getText("LastNameError"));
 				this.byId("iconAdd").setEnabled(false);
 				this.validateLastName = false;
 			} else {
-				if (this.validateFirstName){
-				this.byId("iconAdd").setEnabled(true);
+				if (this.validateFirstName) {
+					this.byId("iconAdd").setEnabled(true);
 				}
 				this.validateLastName = true;
 			}
@@ -221,14 +223,14 @@ sap.ui.define([
 					countUserNames += 1;
 				}
 			}
-			
+
 			var isPresent = false;
-			for(var user in this._users) {
-				if(this._users[user].username === userName) {
+			for (var user in this._users) {
+				if (this._users[user].username === userName) {
 					isPresent = true;
 				}
 			}
-			
+
 			if (countUserNames > 0 || isPresent) {
 				return false;
 			} else {
@@ -265,32 +267,25 @@ sap.ui.define([
 
 			var isPresent = this.usernameValidation();
 
-			if(!isPresent) {
+			if (!isPresent) {
 				MessageToast.show("Username already exists!", Error);
 				this._wizard.invalidateStep(this.byId("CreateUsersStep"));
-			}
-			else {
-				//var oViewUsers = this.getView                                                 
-				//this._users.push(oModel.setData(userData));
-				
+			} else {
 				MessageToast.show("User added!");
-	
+
 				this._users.push(userData);
-	
-				console.log(this._users);
-	
 				this.oView.getModel("users").setProperty("/createdUsersData", this._users);
-	
+
 				this.getView().byId("firstName").setValue("");
 				this.getView().byId("lastName").setValue("");
 				this.getView().byId("username").setValue("");
 				this.getView().byId("password").setValue("");
-				
+
 				this._wizard.validateStep(this.byId("CreateUsersStep"));
-				
+
 			}
 		},
-		
+
 		onExit: function () {
 			if (this._pspDialog) {
 				this._pspDialog.close();
@@ -299,10 +294,10 @@ sap.ui.define([
 				this._oDialog.close();
 			}
 		},
-		
+
 		handleDisplayUsers: function (oEvent) {
 			var oButton = oEvent.getSource();
-			
+
 			if (!this._oDialog) {
 				Fragment.load({
 					name: "sap.ui.demo.fiori2.view.Users",
@@ -317,10 +312,11 @@ sap.ui.define([
 				this._oDialog.open();
 			}
 		},
-		
+
 		_configDialog: function (oButton) {
 			var sResponsivePadding = oButton.data("responsivePadding");
-			var sResponsiveStyleClasses = "sapUiResponsivePadding--header sapUiResponsivePadding--subHeader sapUiResponsivePadding--content sapUiResponsivePadding--footer";
+			var sResponsiveStyleClasses =
+				"sapUiResponsivePadding--header sapUiResponsivePadding--subHeader sapUiResponsivePadding--content sapUiResponsivePadding--footer";
 
 			if (sResponsivePadding) {
 				this._oDialog.addStyleClass(sResponsiveStyleClasses);
@@ -338,6 +334,44 @@ sap.ui.define([
 			this._oNavContainer.backToPage(this._oWizardContentPage.getId());
 		},
 
+		_discardProgress: function () {
+			this.oView.getModel("users").setProperty("/programName", "");
+			this.oView.byId("programName").setValue("");
+			this.oView.byId("programName").setValueState("None");
+
+			this.oView.getModel("users").setProperty("/startDate", "");
+			this.oView.byId("startDate").setValue("");
+			this.oView.byId("startDate").setValueState("None");
+
+			this.oView.getModel("users").setProperty("/endDate", "");
+			this.oView.byId("endDate").setValue("");
+			this.oView.byId("endDate").setValueState("None");
+
+			this.oView.getModel("users").setProperty("/firstName", "");
+			this.oView.byId("firstName").setValue("");
+			this.oView.byId("firstName").setValueState("None");
+
+			this.oView.getModel("users").setProperty("/lastName", "");
+			this.oView.byId("lastName").setValue("");
+			this.oView.byId("lastName").setValueState("None");
+
+			this.oView.getModel("users").setProperty("/username", "");
+			this.oView.byId("username").setValue("");
+			this.oView.byId("username").setValueState("None");
+
+			this.oView.getModel("users").setProperty("/password", "");
+			this.oView.byId("password").setValue("");
+			this.oView.byId("password").setValueState("None");
+
+			this._users = [];
+			this.oView.getModel("users").setProperty("/createdUsersData", this._users);
+
+			this._psps = [];
+			this.oView.getModel("users").setProperty("/createdPspsData", this._psps);
+			this.oView.byId("PspName").setValue("");
+			this.oView.byId("PspName").setValueState("None");
+		},
+
 		_handleNavigationToStep: function (iStepNumber) {
 			var fnAfterNavigate = function () {
 				this._wizard.goToStep(this._wizard.getSteps()[iStepNumber]);
@@ -348,13 +382,65 @@ sap.ui.define([
 			this.backToWizardContent();
 		},
 
-		_handleMessageBoxOpen: function (sMessage, sMessageBoxType) {
+		_handleSubmitMessageBoxOpen: function (sMessage, sMessageBoxType) {
 			MessageBox[sMessageBoxType](sMessage, {
 				actions: [MessageBox.Action.YES, MessageBox.Action.NO],
 				onClose: function (oAction) {
 					if (oAction === MessageBox.Action.YES) {
-						this._handleNavigationToStep(0);
+						var programFormData = new FormData();
+						programFormData.append("name", this.getModel("users").getProperty("/programName"));
+						programFormData.append("startDate", this.getModel("users").getProperty("/startDate"));
+						programFormData.append("endDate", this.getModel("users").getProperty("/endDate"));
+						programFormData.append("workingHours", this.getModel("users").getProperty("/selectedWorkingHours"));
+						programFormData.append('psps', JSON.stringify(this._psps));
+						programFormData.append('users', JSON.stringify(this._users));
+
+						$.ajax({
+							type: "POST",
+							processData: false,
+							contentType: false,
+							data: programFormData,
+							url: Constants.BASE_URL + Constants.PROGRAMS_PATH,
+							async: false,
+							success: function (data, textStatus, jqXHR) {}
+						});
+						this._oNavContainer.removePage(this._oWizardReviewPage);
+						this.oRouter.navTo("master", true);
 						this._wizard.discardProgress(this._wizard.getSteps()[0]);
+						this._discardProgress();
+					}
+				}.bind(this)
+			});
+		},
+
+		_handleCancelMessageBoxOpen: function (sMessage, sMessageBoxType) {
+			MessageBox[sMessageBoxType](sMessage, {
+				actions: [MessageBox.Action.YES, MessageBox.Action.NO],
+				onClose: function (oAction) {
+					if (oAction === MessageBox.Action.YES) {
+						if (this.dialogFrafment) {
+							this.dialogFrafment.destroy(true);
+						}
+						this.oRouter.navTo("master", true);
+						this._wizard.discardProgress(this._wizard.getSteps()[0]);
+						this._discardProgress();
+					}
+				}.bind(this)
+			});
+		},
+
+		_handleCancelReviewMessageBoxOpen: function (sMessage, sMessageBoxType) {
+			MessageBox[sMessageBoxType](sMessage, {
+				actions: [MessageBox.Action.YES, MessageBox.Action.NO],
+				onClose: function (oAction) {
+					if (oAction === MessageBox.Action.YES) {
+						if (this.dialogFrafment) {
+							this.dialogFrafment.destroy(true);
+						}
+						this._oNavContainer.removePage(this._oWizardReviewPage);
+						this.oRouter.navTo("master", true);
+						this._wizard.discardProgress(this._wizard.getSteps()[0]);
+						this._discardProgress();
 					}
 				}.bind(this)
 			});
@@ -364,13 +450,16 @@ sap.ui.define([
 			this.model.setProperty(sPath, "n/a");
 		},
 
-		handleWizardCancel: function () {
-			this._handleMessageBoxOpen("All input data will be lost. Are you sure you want to cancel?", "warning");
+		handleReviewCancel: function () {
+			this._handleCancelReviewMessageBoxOpen("All input data will be lost. Are you sure you want to cancel?", "warning");
 		},
-		
+
+		handleWizardCancel: function () {
+			this._handleCancelMessageBoxOpen("All input data will be lost. Are you sure you want to cancel?", "warning");
+		},
+
 		handleWizardSubmit: function () {
-			this._handleMessageBoxOpen("Are you sure you want to submit your report?", "confirm");
-			// POST program, users, psps
+			this._handleSubmitMessageBoxOpen("Are you sure you want to submit your report?", "confirm");
 		},
 
 		wizardCompletedHandler: function () {
@@ -388,52 +477,49 @@ sap.ui.define([
 		editStepThree: function () {
 			this._handleNavigationToStep(2);
 		},
-		
+
 		createPspValidation: function () {
-			if(this.getView().byId("PspName").getValue() == "") {
+			if (this.getView().byId("PspName").getValue() == "") {
 				this._wizard.invalidateStep(this.byId("CreatePSPStep"));
 			}
 		},
-		
+
 		onAddPsp: function (oEvent) {
 			var pspName = this.getView().byId("PspName").getValue();
-		
-			if(pspName != "" ) {
+
+			if (pspName != "") {
 				var isPresent = false;
-			
-				for(var psp in this._psps) {
-					if(this._psps[psp].name === pspName) {
+
+				for (var psp in this._psps) {
+					if (this._psps[psp].name === pspName) {
 						isPresent = true;
 					}
 				}
-			
-				if(!isPresent) {
+
+				if (!isPresent) {
 					var pspData = {
 						name: pspName
 					};
-				
+
 					this._psps.push(pspData);
 					this.oView.getModel("users").setProperty("/createdPspsData", this._psps);
-			
+
 					this.getView().byId("PspName").setValue("");
 					MessageToast.show(this.getView().getModel("i18n").getResourceBundle().getText("pspAdded"));
-				
+
 					this._wizard.validateStep(this.byId("CreatePSPStep"));
-				}
-				else {
+				} else {
 					MessageToast.show(this.getView().getModel("i18n").getResourceBundle().getText("pspUsed"), Error);
 				}
-			
-				console.log(this._psps);
 			} else {
 				MessageToast.show(this.getView().getModel("i18n").getResourceBundle().getText("completeFields"), Error);
 			}
-			
+
 		},
-		
+
 		onViewPsps: function (oEvent) {
-			
-			if(!this._pspDialog) {
+
+			if (!this._pspDialog) {
 				Fragment.load({
 					name: "sap.ui.demo.fiori2.view.Psp",
 					controller: this
