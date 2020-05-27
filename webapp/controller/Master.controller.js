@@ -62,12 +62,12 @@ sap.ui.define([
 				}));
 				oBinding.filter(aFilter);
 				this.oView.getModel("model").setProperty("/count", iCount + 1);
-				this.getView().byId("filterButton").setTooltip("Show all programs");
+				this.getView().byId("filterButton").setTooltip(this.getView().getModel("i18n").getResourceBundle().getText("filterMessageAll"));
 				return;
 			} else {
 				oBinding.filter();
 				this.oView.getModel("model").setProperty("/count", iCount + 1);
-				this.getView().byId("filterButton").setTooltip("Show active programs");
+				this.getView().byId("filterButton").setTooltip(this.getView().getModel("i18n").getResourceBundle().getText("filterMessageActive"));
 				return;
 			}
 

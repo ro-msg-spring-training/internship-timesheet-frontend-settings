@@ -111,7 +111,7 @@ sap.ui.define([
 
 			var progamNameFormData = new FormData();
 			progamNameFormData.append("name", oInput.getValue());
-
+			var nameExist = false;
 			$.ajax({
 				type: "POST",
 				processData: false,
@@ -123,6 +123,7 @@ sap.ui.define([
 					if (data === true) {
 						sValueState = "Error";
 						bValidationError = true;
+						nameExist = true;
 					}
 				}
 			});
@@ -130,9 +131,11 @@ sap.ui.define([
 			if (!bValidationError) {
 				this.oView.getModel("users").setProperty("/programName", oInput.getValue());
 			}
+			if (bValidationError && nameExist) {
+				oInput.setValueStateText(this.getView().getModel("i18n").getResourceBundle().getText("programNameError"));
+			}
 
 			oInput.setValueState(sValueState);
-			oInput.setValueStateText(this.getView().getModel("i18n").getResourceBundle().getText("programNameError"));
 
 			return bValidationError;
 		},
