@@ -10,13 +10,13 @@
 								<Label text="{i18n>programName}"/>
 								<Input id="programName" placeholder="{i18n>programNamePlaceholder}"
 									value="{ path : '/programName', type : 'sap.ui.model.type.String', constraints : { minLength: 1, maxLength: 255 } }" change="onChange"
-									liveChange="onChange" valueState="{/firstNameState}" width="60%"/>
+									liveChange="onChange" valueState="{users>/programNameState}" width="60%"/>
 								<Label text="{i18n>programStartDate}"/>
 								<DatePicker id="startDate" valueFormat="YYYY-MM-dd" displayFormat="YYYY-MM-dd" placeholder="{i18n>dateFormat}"
-									value="{ path : '/startDate', type : 'sap.ui.model.type.Data'}" change="onDateValidation" width="60%"/>
+									value="{ path : '/startDate', type : 'sap.ui.model.type.Data'}" change="onDateValidation" width="60%" valueState="{users>/startDateState}"/>
 								<Label text="{i18n>programEndDate}"/>
 								<DatePicker id="endDate" valueFormat="YYYY-MM-dd" displayFormat="YYYY-MM-dd" placeholder="{i18n>dateFormat}"
-									value="{ path : '/endDate', type : 'sap.ui.model.type.Data'}" change="onDateValidation" width="60%"/>
+									value="{ path : '/endDate', type : 'sap.ui.model.type.Data'}" change="onDateValidation" width="60%" valueState="{users>/endDateState}"/>
 								<Label text="{i18n>programWorkingHours}"/>
 								<Select id="workingHoursSelect" items="{users>/workingHours}" change="onWorkingHoursSelected" width="60%">
 									<core:Item text="{users>value}"/>
@@ -31,11 +31,13 @@
 							</OverflowToolbar>
 							<form:SimpleForm editable="true">
 								<Label text="{i18n>firstName}"/>
-								<Input id="firstName" placeholder="{i18n>enterFirstName}" value="" liveChange="handleFirstNameChange" valueState="{/firstNameState}" width="60%"/>
+								<Input id="firstName" placeholder="{i18n>enterFirstName}" value="" liveChange="handleFirstNameChange" valueState="{users>/firstNameState}"
+									width="60%"/>
 								<Label text="{i18n>lastName}"/>
-								<Input id="lastName" placeholder="{i18n>enterLastName}" value="" liveChange="handleLastNameChange" valueState="{/lastNameState}" width="60%"/>
+								<Input id="lastName" placeholder="{i18n>enterLastName}" value="" liveChange="handleLastNameChange" valueState="{users>/lastNameState}"
+									width="60%"/>
 								<Label text="{i18n>username}"/>
-								<Input id="username" placeholder="{i18n>enterUsername}" value="" valueState="{/usernameState}" width="60%"/>
+								<Input id="username" placeholder="{i18n>enterUsername}" value="" valueState="{users>/usernameState}" width="60%"/>
 								<Label text="{i18n>password}"/>
 								<Input id="password" placeholder="{i18n>enterPassword}" value="" liveChange="passwordValidation" valueState="{/passwordState}" width="60%"/>
 							</form:SimpleForm>
@@ -53,7 +55,7 @@
 									</HBox>
 								</VBox>
 								<Label text="{i18n>pspName}" required="true"/>
-								<Input id="PspName" placeholder="{i18n>pspNameInput}" value="{/pspName}" width="60%"/>
+								<Input id="PspName" placeholder="{i18n>pspNameInput}" value="{/pspName}" width="60%" valueState="{users>/pspNameState}"/>
 							</form:SimpleForm>
 						</WizardStep>
 					</Wizard>

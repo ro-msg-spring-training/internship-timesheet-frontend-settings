@@ -4,18 +4,17 @@ sap.ui.define([
 	"sap/ui/core/mvc/Controller",
 	"sap/ui/model/Filter",
 	"sap/ui/model/FilterOperator",
-	'sap/ui/model/Sorter',
-	'sap/m/MessageBox',
-	'sap/f/library',
+	"sap/ui/model/Sorter",
+	"sap/f/library",
 	"sap/ui/core/format/DateFormat"
-], function (Constants, JSONModel, Controller, Filter, FilterOperator, Sorter, MessageBox, fioriLibrary, DateFormat) {
+], function (Constants, JSONModel, Controller, Filter, FilterOperator, Sorter, fioriLibrary, DateFormat) {
 	"use strict";
 
 	return Controller.extend("sap.ui.demo.fiori2.controller.Master", {
 		onInit: function () {
 			this.oView = this.getView();
 			var oJSONData = {
-				count: 0
+				count: true
 			};
 
 			var oModel = new sap.ui.model.json.JSONModel(oJSONData);
@@ -49,24 +48,35 @@ sap.ui.define([
 			var iCount = this.oView.getModel("model").getProperty("/count");
 			var oTable = this.oView.byId("programsTable");
 			var oBinding = oTable.getBinding("items");
-			if (iCount % 2 == 0) {
+			if (iCount) {
 				var aFilter = [];
 				var oFormat = DateFormat.getDateInstance({
 					pattern: "yyyy-MM-dd"
 				});
 				var date = oFormat.format(new Date());
-				aFilter.push(new Filter({
-					path: "endDate",
-					operator: FilterOperator.GT,
-					value1: date
-				}));
+				aFilter.push(
+					new Filter({
+						filters: [new Filter({
+								path: "endDate",
+								operator: FilterOperator.GT,
+								value1: date
+							}),
+							new Filter({
+								path: "startDate",
+								operator: FilterOperator.LT,
+								value1: date
+							})
+						],
+						and: true | true
+					}));
 				oBinding.filter(aFilter);
-				this.oView.getModel("model").setProperty("/count", iCount + 1);
-				this.getView().byId("filterButton").setTooltip(this.getView().getModel("i18n").getResourceBundle().getText("filterMessageAll"));
+				this.oView.getModel("model").setProperty("/count", false);
+				this.getView().byId("filterButton").setTooltip(
+					this.getView().getModel("i18n").getResourceBundle().getText("filterMessageAll"));
 				return;
 			} else {
 				oBinding.filter();
-				this.oView.getModel("model").setProperty("/count", iCount + 1);
+				this.oView.getModel("model").setProperty("/count", true);
 				this.getView().byId("filterButton").setTooltip(this.getView().getModel("i18n").getResourceBundle().getText("filterMessageActive"));
 				return;
 			}
@@ -76,15 +86,15 @@ sap.ui.define([
 		onPressed: function (oEvent) {
 			var programPath = oEvent.getSource().getBindingContext("model").getPath(),
 				programIndex = programPath.split("/").slice(-1).pop();
-			
+
 			var programId = this.oProgramsTable.getBinding("items").oList[programIndex].programId;
-			
+
 			this.oRouter.navTo("detail", {
 				programId: programId
 			});
 		},
-        
-        onAdd: function (oEvent) {
+
+		onAdd: function (oEvent) {
 			var oRouter = sap.ui.core.UIComponent.getRouterFor(this);
 			oRouter.navTo("wizard", true);
 		}

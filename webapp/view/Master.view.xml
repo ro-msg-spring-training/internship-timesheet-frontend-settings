@@ -12,7 +12,7 @@
 			<VBox fitContainer="true">
 				<OverflowToolbar class="sapFDynamicPageAlignContent">
 					<ToolbarSpacer/>
-					<OverflowToolbarButton icon="sap-icon://filter" tooltip="{i18n>filterMessage}" id = "filterButton" type="Transparent" press=".onFilter"/>
+					<OverflowToolbarButton icon="sap-icon://filter" tooltip="{i18n>filterMessageActive}" id = "filterButton" type="Transparent" press=".onFilter"/>
 					<OverflowToolbarButton icon="sap-icon://sort"  type="Transparent" press=".onSort"/>
 					<OverflowToolbarButton icon="sap-icon://add" type="Transparent" press=".onAdd"/>
 				</OverflowToolbar>

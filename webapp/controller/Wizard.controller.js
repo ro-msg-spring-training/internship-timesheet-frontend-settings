@@ -31,17 +31,23 @@ sap.ui.define([
 			this.oRouter = this.getOwnerComponent().getRouter();
 
 			var oJSONData = {
-				count: 0,
 				programName: "",
 				startDate: "",
 				endDate: "",
+				firstNameState: "None",
+				lastNameState: "None",
+				usernameState: "None",
+				pspNameState: "None",
+				startDateState: "None",
+				endDateState: "None",
+				programNameState: "None",
 				selectedWorkingHours: "4",
 				workingHours: [{
 					value: "4"
 				}, {
 					value: "6"
 				}, {
-					value: "8",
+					value: "8"
 				}]
 			};
 
@@ -99,15 +105,8 @@ sap.ui.define([
 
 		_validateProgramNameInput: function (oInput) {
 			var oBinding = oInput.getBinding("value");
-			var sValueState = "None";
 			var bValidationError = false;
-
-			try {
-				oBinding.getType().validateValue(oInput.getValue());
-			} catch (oException) {
-				sValueState = "Error";
-				bValidationError = true;
-			}
+			this.oView.getModel("users").setProperty("/programNameState", "None");
 
 			var progamNameFormData = new FormData();
 			progamNameFormData.append("name", oInput.getValue());
@@ -121,7 +120,6 @@ sap.ui.define([
 				async: false,
 				success: function (data, textStatus, jqXHR) {
 					if (data === true) {
-						sValueState = "Error";
 						bValidationError = true;
 						nameExist = true;
 					}
@@ -132,10 +130,18 @@ sap.ui.define([
 				this.oView.getModel("users").setProperty("/programName", oInput.getValue());
 			}
 			if (bValidationError && nameExist) {
+				this.oView.getModel("users").setProperty("/programNameState", "Error");
 				oInput.setValueStateText(this.getView().getModel("i18n").getResourceBundle().getText("programNameError"));
+			} else {
+				this.oView.getModel("users").setProperty("/programNameState", "None");
 			}
-
-			oInput.setValueState(sValueState);
+			try {
+				oBinding.getType().validateValue(oInput.getValue());
+			} catch (oException) {
+				this.oView.getModel("users").setProperty("/programNameState", "Error");
+				bValidationError = true;
+				oInput.setValueStateText(this.getView().getModel("i18n").getResourceBundle().getText("prograNameEmpty"));
+			}
 
 			return bValidationError;
 		},
@@ -147,24 +153,21 @@ sap.ui.define([
 		},
 
 		onDateValidation: function (oEvent) {
-			var sValueStateStart = "None";
 			var bValidationError = false;
-			var sValueStateEnd = "None";
 			if (this.oStartDatePicker.getValue() !== "" && this.oEndDatePicker.getValue() !== "") {
 				if (this.oStartDatePicker.getValue() > this.oEndDatePicker.getValue()) {
-					sValueStateStart = "Error";
-					sValueStateEnd = "Error";
+					this.oView.getModel("users").setProperty("/startDateState", "Error");
+					this.oView.getModel("users").setProperty("/endDateState", "Error");
 					bValidationError = true;
 				} else {
 					this.oView.getModel("users").setProperty("/startDate", this.oStartDatePicker.getValue());
 					this.oView.getModel("users").setProperty("/endDate", this.oEndDatePicker.getValue());
+					this.oView.getModel("users").setProperty("/startDateState", "None");
+					this.oView.getModel("users").setProperty("/endDateState", "None");
 				}
 			}
-			this.oStartDatePicker.setValueState(sValueStateStart);
 			this.oStartDatePicker.setValueStateText(this.getView().getModel("i18n").getResourceBundle().getText("dateError"));
-			this.oEndDatePicker.setValueState(sValueStateEnd);
 			this.oEndDatePicker.setValueStateText(this.getView().getModel("i18n").getResourceBundle().getText("dateError"));
-
 			this._createProgramStepValidation();
 
 			return bValidationError;
@@ -186,13 +189,13 @@ sap.ui.define([
 		handleFirstNameChange: function (oEvent) {
 			var firstName = this.byId("firstName").getValue();
 			var pattern = RegExp('^[A-Za-z]+((\s)?((\'|\-|\.)?([A-Za-z])+))*$');
-			oEvent.getSource().setValueState("None");
 			if (!pattern.test(firstName)) {
-				oEvent.getSource().setValueState("Error");
+				this.oView.getModel("users").setProperty("/firstNameState", "Error");
 				oEvent.getSource().setValueStateText(this.getView().getModel("i18n").getResourceBundle().getText("FirstNameError"));
 				this.byId("iconAdd").setEnabled(false);
 				this.validateFirstName = false;
 			} else {
+				this.oView.getModel("users").setProperty("/firstNameState", "None");
 				if (this.validateLastName) {
 					this.byId("iconAdd").setEnabled(true);
 				}
@@ -203,13 +206,13 @@ sap.ui.define([
 		handleLastNameChange: function (oEvent) {
 			var lastName = this.byId("lastName").getValue();
 			var pattern = RegExp('^[A-Za-z]+((\s)?((\'|\-|\.)?([A-Za-z])+))*$');
-			oEvent.getSource().setValueState("None");
 			if (!pattern.test(lastName)) {
-				oEvent.getSource().setValueState("Error");
+				this.oView.getModel("users").setProperty("/lastNameState", "Error");
 				oEvent.getSource().setValueStateText(this.getView().getModel("i18n").getResourceBundle().getText("LastNameError"));
 				this.byId("iconAdd").setEnabled(false);
 				this.validateLastName = false;
 			} else {
+				this.oView.getModel("users").setProperty("/lastNameState", "None");
 				if (this.validateFirstName) {
 					this.byId("iconAdd").setEnabled(true);
 				}
@@ -269,24 +272,32 @@ sap.ui.define([
 			};
 
 			var isPresent = this.usernameValidation();
-
-			if (!isPresent) {
-				MessageToast.show("Username already exists!", Error);
-				this._wizard.invalidateStep(this.byId("CreateUsersStep"));
+			var empty = false;
+			if (firstName == "" || lastName == "" || username == "" || password == "") {
+				empty = true;
+				MessageToast.show("You must complete all the fields!", Error);
 			} else {
-				MessageToast.show("User added!");
+				if (!isPresent) {
+					MessageToast.show("Username already exists!", Error);
+					this.oView.getModel("users").setProperty("/usernameState", "Error");
+					this._wizard.invalidateStep(this.byId("CreateUsersStep"));
+				} else {
+					MessageToast.show("User added!");
+					this.oView.getModel("users").setProperty("/usernameState", "None");
 
-				this._users.push(userData);
-				this.oView.getModel("users").setProperty("/createdUsersData", this._users);
+					this._users.push(userData);
+					this.oView.getModel("users").setProperty("/createdUsersData", this._users);
 
-				this.getView().byId("firstName").setValue("");
-				this.getView().byId("lastName").setValue("");
-				this.getView().byId("username").setValue("");
-				this.getView().byId("password").setValue("");
+					this.getView().byId("firstName").setValue("");
+					this.getView().byId("lastName").setValue("");
+					this.getView().byId("username").setValue("");
+					this.getView().byId("password").setValue("");
 
-				this._wizard.validateStep(this.byId("CreateUsersStep"));
+					this._wizard.validateStep(this.byId("CreateUsersStep"));
 
+				}
 			}
+
 		},
 
 		onExit: function () {
@@ -496,10 +507,12 @@ sap.ui.define([
 				for (var psp in this._psps) {
 					if (this._psps[psp].name === pspName) {
 						isPresent = true;
+						this.oView.getModel("users").setProperty("/pspNameState", "Error");
 					}
 				}
 
 				if (!isPresent) {
+					this.oView.getModel("users").setProperty("/pspNameState", "None");
 					var pspData = {
 						name: pspName
 					};
@@ -512,6 +525,7 @@ sap.ui.define([
 
 					this._wizard.validateStep(this.byId("CreatePSPStep"));
 				} else {
+					this.oView.getModel("users").setProperty("/pspNameState", "Error");
 					MessageToast.show(this.getView().getModel("i18n").getResourceBundle().getText("pspUsed"), Error);
 				}
 			} else {
